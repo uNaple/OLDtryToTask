@@ -1,0 +1,7 @@
+node_modules
+*/node_modules
+config.js
+logs/*
+*npm-debug.log
+pgdb-storage
+pgdb-storage/*

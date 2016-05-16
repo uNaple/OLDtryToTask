@@ -1,0 +1,32 @@
+doctype html
+html
+	head
+		title #{title}
+	body
+		table(border='1', cellpadding='7')
+			tr 
+				td(colspan='1', bgcolor='#D3EDF6', align='center') id
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+			tr
+				-var task = JSON.stringify(tmpTask)
+				td #{tmpTask.id}
+				td #{tmpTask.Заголовок}
+				td #{tmpTask.Тип}
+				td #{tmpTask.Постановщик}
+				td #{tmpTask.Контроллер}
+				td #{tmpTask.Исполнитель}
+				td #{tmpTask.Время_постановки}
+				td #{tmpTask.Статус}
+				td #{tmpTask.Описание}
+				td
+					form(method='get',action='/edit')
+						input(type='hidden', value=task, name='task')
+						input(type='submit', value='Изменить')
+

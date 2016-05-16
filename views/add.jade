@@ -1,0 +1,34 @@
+doctype html
+html
+	head
+		title #{title}
+	body
+		table(border='1', cellpadding='7')
+			tr 
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+			tr
+				form(method='get', action='/addTask') 
+					td
+						input(type='text', name='Заголовок') 
+					td 
+						input(type='text', name='Тип')
+					td 
+						input(type='text', name='Постановщик')
+					td 
+						input(type='text', name='Контроллер')
+					td 
+						input(type='text', name='Исполнитель')
+					td 
+						input(type='text', name='Время_постановки')
+					td 
+						input(type='text', name='Статус')
+					td 
+						input(type='text', name='Описание')
+					input(type='submit', value='Создать')

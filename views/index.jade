@@ -1,0 +1,29 @@
+doctype html
+html
+	head
+		title #{title}
+	body
+		h1 задачки
+		table
+			tr
+				td 
+					form(action='/showall')
+						input(type='submit', value='Показать все задачи')
+			tr
+				td
+					form(method='get',action='/show') 
+						input(type='submit', value='Показать по id') 
+						input(type='text', name='id')
+					a(class = error ? "visible" : "hidden")
+					td
+						p #{error}
+			tr
+				td
+					form(method='get', action='/edit')
+						input(type='submit', value='Добавить новую задачу')
+			//- tr 
+			//- 	td
+			//- 		form(action='/')
+			//- 			input(type='submit', value='Показать все задачи')
+
+
