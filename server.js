@@ -20,6 +20,12 @@ var app 		= express();
 var path		= require('path');
 var bodyParser 	= require('body-parser')
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.raw());
+app.set('view engine', 'jade');
+app.set('views', './views');
+app.use(express.static(path.join(__dirname,'public')));
 
 function myTask() {           				//объект Задание
 	this.id = null;
@@ -102,96 +108,107 @@ var task1 = new myTask(),
 // 	task1.name = 'GHKUda';
 // 	db.updateTask(task1);
 // }
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.raw());
-app.set('view engine', 'jade');
-app.set('views', './views');
-app.use(express.static(path.join(__dirname,'public')));
 
 app.get('/', function(req, res){
-	res.render('index', {
+	res.render('index',{
 				title: 'TASK MANAGER YOPTA'})
 })
-
-app.get('/edit', function(req,res){
-	//var task = JSON.parse(req.query.task);
-	//console.log(req.query);
+												//Редактирование задания
+app.post('/edit', function(req,res){
+	console.log(req.body.task);
+	//var task = new myTask();
 	res.render('edit', {
 		title: 'TASK MANAGER YOPTA',
-		task: JSON.parse(req.query.task)
+		task: JSON.parse(req.body.task)
 	})
 })
 
-app.get('/update', function(req,res){
-	console.log(req.query);
-	//var obj = JSON.stringify(req.query);
-	db.updateTask(req.query);
-	res.redirect('/showall');
-	// {
-	// 			title: 		'TASK MANAGER YOPTA',
-	// 			tmpTask: 	
-	// 		})
-})
-
-app.get('/add', function(req,res){
-	var obj = req.query;
-	res.render('add', {
-		title: 'TASK MANAGER YOPTA'
+app.post('/update', function(req,res){
+	console.log(req.body);
+	db.updateTask(req.body,	function(err){
+		if(err)
+			console.log('Ошибка при обновлении: ' + err);
+		else {
+			console.log('Успешно обновлено!');      
+			res.redirect('/showall')
+		}
 	});
 })
+												//Добавление задания
+app.get('/add', function(req,res){
+	var task = new myTask();
+	res.render('add', {
+		title: 'TASK MANAGER YOPTA',
+		task: task
+	})
+})
 
-app.get('/show', function (req, res) {
-	//console.log('input id: ' + req.body.id || req.params.id || req.query.id);
+app.post('/addTask', function(req, res){
+	console.log(req.body)
+	db.addTask(req.body, function(err, result){
+		if(err)
+			console.log(err);
+		else {
+			console.log(result);
+			res.render('show', {
+				title: 		'TASK MANAGER YOPTA',
+				tmpTask: 	result
+
+			})
+		}
+	 })
+})
+
+
+app.post('/show', function (req, res) {
+	// console.log('input id: ' + req.body.id || req.params.id || req.query.id);
+	//console.log(req.body.id);
 	db.loadTask(req.body.id || req.params.id || req.query.id, function(err, tmpTask){
 		if(err){
 			console.log(err.message);
 			res.render('index', {
 							error: err.message})
 		}
-		else{
+		else {
 			res.render('show', {
 				title: 		'TASK MANAGER YOPTA',
 				tmpTask: 	tmpTask
-				// id: 		tmpTask.id,
-				// taskName: 	tmpTask.Заголовок,
-				// type : 		tmpTask.Тип,
-				// director : 	tmpTask.Постановщик,
-				// controller :tmpTask.Контроллер,
-				// executor: 	tmpTask.Исполнитель,
-				// timeOfSet: 	tmpTask.Время_постановки,
-				// status: 	tmpTask.Статус,
-				// description:tmpTask.Описание
+
 			})
 		}
 	})	
 });
 
 app.get('/showall', function (req, res) {
-	db.loadAll(function(tmpTask){
-		res.render('showall', {
-					rows: tmpTask})
+	db.loadAll(function(err, tmpTask){    				//в переменной результаты запроса из БД
+		if(err)
+			console.log("LoadAll function " + err);
+		else {
+			res.render('showall', {
+	 			title:  'TASK MANAGER YOPTA',
+				rows:  	tmpTask})
+			}
 		})
 	}
 );
 
-app.post('/', function(req,res,next){
-	task2.name = req.body.title;
-	console.log(req.body.title + " " + req.body.data);
-})
+// app.post('/', function(req,res,next){
+// 	task2.name = req.body.title;
+// 	console.log(req.body.title + " " + req.body.data);
+// })
 
-// app.use(function(req, res, next) {
-//     res.status(404).render("pages/error", {
-//         title: "ошибка 404",
-//         msg: "ошибка 404"
-//     });
+app.use(function(req, res, next) {
+    res.status(404).render("error", {
+        title: "404",
+        msg: "ошибка 404"
+    });
 
-//     res.status(500).render("pages/error", {
-//         title: "ошибка 500",
-//         msg: "ошибка 500"
-//     });
-// });
+    // res.status(500).render("error", {
+    //     title: "ошибка 500",
+    //     msg: "ошибка 500"
+    // });
+});
 
 app.listen(9120, function () { 
-   console.log('Example app listening on port 9120!');
+   console.log('Example app listening on port 9120!\n >> Enter the matrix? (red/blue)');
  });

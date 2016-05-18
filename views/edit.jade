@@ -2,11 +2,13 @@ doctype html
 html
 	head
 		title #{title}
+		style
+			include style.css
 	body
 		table(border='1', cellpadding='7')
 			tr 
 				//td(colspan='1', bgcolor='#D3EDF6', align='center') id
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Заголовок
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
@@ -15,22 +17,24 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
 			tr
-				form(method='get', action='/update')
-					input(type='hidden', value=task.id, name='id') 
-					td
-						input(type='text', value=task.Заголовок, name='Заголовок') 
-					td 
-						input(type='text', value=task.Тип, name='Тип', list='Users')
-					td 
-						input(type='text', value=task.Постановщик, name='Постановщик')
-					td 
-						input(type='text', value=task.Контроллер, name='Контроллер')
-					td 
-						input(type='text', value=task.Исполнитель, name='Исполнитель')
-					td 
-						input(type='text', value=task.Время_постановки, name='Время_постановки')
-					td 
-						input(type='text', value=task.Статус, name='Статус')
-					td 
-						input(type='text', value=task.Описание, name='Описание')
-					input(type='submit', value='Применить')
+				form(method='post', action='/update')
+					tr
+						input(type='hidden', value=task.id, name='id') 
+						td
+							input(type='text', value=task.Заголовок, name='Заголовок') 
+						td 
+							input(type='text', value=task.Тип, name='Тип', list='Users')
+						td 
+							input(type='text', value=task.Постановщик, name='Постановщик')
+						td 
+							input(type='text', value=task.Контроллер, name='Контроллер')
+						td 
+							input(type='text', value=task.Исполнитель, name='Исполнитель')
+						td 
+							input(type='text', value=task.Время_постановки, name='Время_постановки')
+						td 
+							input(type='text', value=task.Статус, name='Статус')
+						td 
+							input(type='text', value=task.Описание, name='Описание')
+					tr
+							input(type='submit', value='Применить')

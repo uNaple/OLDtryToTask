@@ -2,10 +2,13 @@ doctype html
 html
 	head
 		title #{title}
+		style
+			include style.css
 	body
 		table(border='1', cellpadding='7')
 			tr
-				td(colspan='1', bgcolor='#D3EDF6', align='center') id
+				//id не для юзера, а для компа
+				//td(colspan='1', bgcolor='#D3EDF6', align='center') id 					 
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
@@ -16,7 +19,7 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
 			each i in rows
 				tr
-					td= i.id
+					//td= i.id
 					td= i.Заголовок
 					td= i.Тип
 					td= i.Постановщик
@@ -26,6 +29,6 @@ html
 					td= i.Статус
 					td= i.Описание
 					td
-						form(method='get',action='/show')
+						form(method='post',action='/show')
 							input(type='hidden', value=i.id, name='id')
 							input(type='submit', value='Посмотреть')

@@ -13,7 +13,7 @@ function connectDB(cb) { 						//коннект к ДБ
 }
 
 // myTask.prototype.addTask = 
-function addTask (obj) {						//добавить задание 
+function addTask (obj, cb) {						//добавить задание 
 	obj.status = statusArray[3];				//Автоматически выставляется при добавлении
   // try {
 	connectDB( function (client) {
@@ -21,11 +21,12 @@ function addTask (obj) {						//добавить задание
 
 		// }))
 		var text = 'sometext';
+		obj.timeOfSet = getNowDate();
 		var queryHead = `INSERT INTO tasks.tasks(Заголовок, Постановщик, Контроллер, Время_постановки, Статус`,
 			queryTail = `VALUES('${obj.Имя}', 
 								'${obj.Постановщик}',
 								'${obj.Контроллер}',
-								'${getNowDate()}',
+								'${obj.timeOfSet}',
 								'${obj.Статус}'`;
 		if(obj.Тип != null) {
 			queryHead += ', Тип';
@@ -42,13 +43,13 @@ function addTask (obj) {						//добавить задание
 		queryHead += ')';
 		queryTail += ')';
 		var queryFinal = queryHead + queryTail + ' RETURNING id;';
-		//console.log(queryFinal);
 		client.query(queryFinal, function(err, result) {
-			    if (err) {
-			    	console.log(err);
-			    } else { 
+			    if (err) 
+			    	cb(err)
+			    else { 
 			    	console.log('Задача добавлена с id: ' + result.rows[0].id);
 			    	obj.id = result.rows[0].id;
+			    	cb(null, obj);
 			    }
 		addHistory(client,"blahblah",typeOfAction[0]);	    
 		client.end();
@@ -59,7 +60,7 @@ function addTask (obj) {						//добавить задание
   // 	return;
  }
 
-function updateTask (obj){                      //обновить задание
+function updateTask (obj, cb){                      //обновить задание
 	connectDB(function(client) {
 		var query = `UPDATE tasks.tasks	SET `;      //создаем строку запроса
 		if(obj.Заголовок != null) {
@@ -74,26 +75,24 @@ function updateTask (obj){                      //обновить задани�
 		query += ` WHERE id = ${obj.id};`;
 		//console.log(query);
 		client.query(query, function(err, result) { //отправка запроса на обновление
-			    if (err) {
-			        console.log('Ошибка при обновлении: ' + err);
-			    } else {		  
-			    	console.log('Успешно обновлено!');      
-			    }
+			    if (err)
+			    	cb(err);
+			    else 
+			    	cb(null)
 			});
 		addHistory(client,"бла",typeOfAction[3]); 	//добавляем в историю
 		//client.end();
 	})
 }
 
-function loadAll(cb){
+function loadAll(tmpTask){							//принимает переменную, в которую посылает полученные из БД данные
 	connectDB( function(client){
 		var query = `SELECT * FROM tasks.tasks;`;
 		client.query(query, function (err, result){
 			if(err)
-				console.log("LoadAll function " + err);
+				tmpTask(err);
 			else 
-				cb(result.rows);
-				// console.log(result.rows[0]);
+				tmpTask(null, result.rows);
 			client.end();
 		})
 	})
@@ -107,8 +106,6 @@ function loadTask(id, cb){							//передаю id и по нему получ
 			if(err) {
 				var err = new Error('Неверный формат ввода id');
 				cb(err)
-				//return new Error(err.message);
-				//console.log("Load Task " + err);
 			}
 			else if(result.rows[0] == undefined){
 				var err = new Error('Нет задания с таким id');

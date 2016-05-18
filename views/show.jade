@@ -2,11 +2,14 @@ doctype html
 html
 	head
 		title #{title}
+		style
+			include style.css
 	body
 		table(border='1', cellpadding='7')
 			tr 
-				td(colspan='1', bgcolor='#D3EDF6', align='center') id
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
+				//id не для юзера, а для компа
+				//td(colspan='1', bgcolor='#D3EDF6', align='center') id  		
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Заголовок
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
@@ -16,7 +19,7 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
 			tr
 				-var task = JSON.stringify(tmpTask)
-				td #{tmpTask.id}
+				//td #{tmpTask.id}
 				td #{tmpTask.Заголовок}
 				td #{tmpTask.Тип}
 				td #{tmpTask.Постановщик}
@@ -26,7 +29,7 @@ html
 				td #{tmpTask.Статус}
 				td #{tmpTask.Описание}
 				td
-					form(method='get',action='/edit')
+					form(method='post',action='/edit')
 						input(type='hidden', value=task, name='task')
 						input(type='submit', value='Изменить')
 
