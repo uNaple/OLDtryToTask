@@ -5,6 +5,13 @@ html
 		style
 			include style.css
 	body
+		//- datalist(id='cocktail')
+				option Аперитивы
+				option Горячие
+				option Десертные
+				option Диджестивы
+				option Молочные
+				option Слоистые
 		table(border='1', cellpadding='7')
 			tr 
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Заголовок
@@ -28,7 +35,10 @@ html
 								each i in typeArray
 									option(value=i) #{i}							
 						td 
-							input(type='text', value=task.director, name='director')
+							input(name='director', list='users')
+							datalist(id='users')
+								each i in usersArray
+									option(value=i.name)
 						td 
 							select(required='', name='controller')
 								each i in usersArray
