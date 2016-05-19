@@ -13,9 +13,9 @@ function connectDB(cb) { 						//коннект к ДБ
 }
 
 function addTask (obj, cb) {						//добавить задание 
-	obj.status = statusArray[3];				//Автоматически выставляется при добавлении
+	obj.status = statusArray[3];					//Автоматически выставляется при добавлении
   // try {
-	connectDB( function (client) {
+	connectDB( function (client) {					//подключаемся и создаем запрос
 		var text = 'sometext';
 		var queryHead = `INSERT INTO tasks.tasks(name, director, controller, timeOfSet, status`,
 			queryTail = `VALUES('${obj.name}', 
@@ -38,24 +38,54 @@ function addTask (obj, cb) {						//добавить задание
 		queryHead += ')';
 		queryTail += ')';
 		var queryFinal = queryHead + queryTail + ' RETURNING id;';
-		client.query(queryFinal, function(err, result) {
+		client.query(queryFinal, function(err, result) {				//отправляем запрос
 			    if (err)
 			    	cb(err)
 			    else { 
 			    	console.log('Задача добавлена с id: ' + result.rows[0].id);
 			    	// obj.id = result.rows[0].id;
-			    	loadTask(result.rows[0].id, function(err,result){
+			    	loadTask(result.rows[0].id, function(err,result){	//возвращаем добавленную задачу
 			    		if(err)
 			    			cb(err);
-			    		else 
+			    		else {
 			    			cb(null,result);
+							addHistory(client,"blahblah",typeOfAction[0]);	    //добавляем в историю
+						}
 			    	});
 			    }
-		addHistory(client,"blahblah",typeOfAction[0]);	    
-		client.end();
+				client.end();
 			});
 	});
  }
+
+function addUser(obj) {												//добавить пользователя
+	connectDB(function (client) {
+		var query = `INSERT INTO tasks.users(name) 
+					 VALUES ('${obj}') RETURNING id`;
+		client.query(query, function(err, result) {
+		    if (err)
+		    	console.log(err)
+		    else
+		    	console.log('Пользователь добавлен с id: ' + result.rows[0].id);
+		    // obj.id = result.rows[0].id;
+			//addHistory(client,"blahblah",typeOfAction[0]);	    
+			client.end();
+		})
+	})
+}
+
+function addHistory(client, text, action){      //добавить в таблицу истории
+	client.query(`INSERT INTO tasks.history(Текст, Действие, Время)
+	VALUES('${text}',
+		   '${action}',
+		   '${getNowDate()}');`, function(err, res){
+		   	if(err)
+		   		console.log('Ошибка при добавлении в историю' + err);
+		   	else
+		   		console.log('Запись успешно добавлена в таблицу действий');
+	client.end();
+	});
+}
 
 function updateTask (obj, cb){                      //обновить задание
 	connectDB(function(client) {
@@ -68,6 +98,12 @@ function updateTask (obj, cb){                      //обновить зада�
 		}
 		if(obj.description != null) {
 			query += `, description = '${obj.description}'`;
+		}
+		if(obj.controller != null) {
+			query += `, controller = '${obj.controller}'`;
+		}
+		if(obj.executor != null) {
+			query += `, executor = '${obj.executor}'`;
 		}
 		query += ` WHERE id = ${obj.id};`;
 		//console.log(query);
@@ -82,7 +118,24 @@ function updateTask (obj, cb){                      //обновить зада�
 	})
 }
 
-function loadAll(tmpTask){							//принимает переменную, в которую посылает полученные из БД данные
+function loadAllUsers(cb){							//Получтиь всех пользваотелей. Принимает переменную, в которую посылает полученные из БД данные
+	connectDB( function(client){
+		var query = `SELECT * FROM tasks.users;`;
+		client.query(query, function (err, result){
+			if(err)
+				cb(err)
+				//console.log('load All Users func. ' + err);
+			else {
+				//console.log(result.rows);
+				cb(null, result.rows);
+				//console.log('Данные из таблицы users получены');
+				client.end();
+			}
+		})
+	})
+}
+
+function loadAll(tmpTask){							//Получить все задачи. Принимает переменную, в которую посылает полученные из БД данные
 	connectDB( function(client){
 		var query = `SELECT * FROM tasks.tasks;`;
 		client.query(query, function (err, result){
@@ -156,7 +209,7 @@ function createTable(name) {					//создать таблицу, постави
 	case 'users':
 		var query = `CREATE TABLE tasks.users	(
 			id SERIAL,
-			Namevarchar(40));`
+			name varchar(40));`
 		break
 	case 'history':	
 		var query = `CREATE TABLE tasks.history (
@@ -204,18 +257,7 @@ function getNowDate(){
 	return today;                       //текущая дата в формате timestamp without time zone
 }
 
-function addHistory(client, text, action){      //добавить в таблицу истории
-	client.query(`INSERT INTO tasks.history(Текст, Действие, Время)
-	VALUES('${text}',
-		   '${action}',
-		   '${getNowDate()}');`, function(err, res){
-		   	if(err)
-		   		console.log('Ошибка при добавлении в историю' + err);
-		   	else
-		   		console.log('Запись успешно добавлена в таблицу действий');
-	client.end();
-	});
-}
+
 
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
 	typeOfAction = ["Добавлена", "Переназначена", "status сменен на *", "Обновлено"],
@@ -236,5 +278,6 @@ module.exports = {
 	getNowDate: 	getNowDate,
 	deleteTable: 	deleteTable,
 	reassignTask: 	reassignTask,
-
+	addUser:     	addUser,
+	loadAllUsers: 	loadAllUsers
 };

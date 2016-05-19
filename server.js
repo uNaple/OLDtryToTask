@@ -72,6 +72,11 @@ function randomFill(num){					//Рандомное заполнение
 	}
 }
 
+function userFill() {
+	for(var i = 0; i < usersArray.length; i++)
+		db.addUser(usersArray[i]);
+}
+
 function printInfo(){
 	console.log('=============================')
 	db.connectDB(function (client){
@@ -90,23 +95,21 @@ var statusArray  = ["В процессе", "Закончена", "Приоста
 	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
 	usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
+
 //для переназначения
-var recieve = 'Леша',
-	give = 'Саша';
-
-var task1 = new myTask(),
- 	task2 = new myTask();
-
+// var recieve = 'Леша',
+// 	give = 'Саша';
 //db.createTable('history');
 //db.createTable('users');
 //db.createTable('tasks');
 //db.createTable('TEST NULL TABLE');
-
 //db.deleteTable('tasks');
-//randomFill(10);
 //db.reassignTask(recieve,give);	
 //db.loadTask(process.argv[2]);
 //db.addTask(task1);
+//randomFill(2);
+//userFill();
+//======================================================================================================================
 
 app.get('/', function(req, res){
 	res.render('index',{
@@ -114,11 +117,17 @@ app.get('/', function(req, res){
 })
 												//Редактирование задания
 app.post('/edit', function(req,res){
-	console.log(req.body.task);
-	//var task = new myTask();
-	res.render('edit', {
-		title: 'TASK MANAGER YOPTA',
-		task: JSON.parse(req.body.task)
+	db.loadAllUsers(function(err, result){
+		if(err)
+			console.log('Load all users func.' + err);
+		else {
+			res.render('edit', {
+						title: 			'TASK MANAGER YOPTA',
+						task: 			JSON.parse(req.body.task),
+						typeArray: 		typeArray,
+						usersArray: 	result
+			})
+		}
 	})
 })
 
@@ -135,11 +144,18 @@ app.post('/update', function(req,res){
 })
 												//Добавление задания
 app.get('/add', function(req,res){
-	var task = new myTask();
-	res.render('add', {
-		title: 'TASK MANAGER YOPTA',
-		task: task,
-		typeOfAction: typeOfAction
+	db.loadAllUsers(function(err, result){
+		var task = new myTask();
+		if(err)
+			console.log('Load all users func.' + err);
+		else {
+			res.render('add', {
+				title: 'TASK MANAGER YOPTA',
+				task: task,
+				typeArray: typeArray,
+				usersArray: result
+			})
+		}
 	})
 })
 
@@ -156,7 +172,7 @@ app.post('/addTask', function(req, res){
 
 			})
 		}
-	 })
+	})
 })
 
 app.get('/test', function(req, res){

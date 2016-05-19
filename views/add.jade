@@ -23,21 +23,20 @@ html
 						input(type='hidden', value=task.id, name='id')
 						td
 							input(type='text', value=task.name, name='name') 
-						td 
-							//input(type='text', value=task.type, name='type')
+						td
 							select(multpile='',name='type', form='task')
-								each i in typeOfAction
-									option(value='e') #{i}
-								//- option(value='Чебурашка') Чебурашка
-								//- option(value='Крокодил Гена') Крокодил Гена
-								//- option(value='Шапокляк') Шапокляк
-								//- option(value='Крыса Лариса') Крыса Лариса							
+								each i in typeArray
+									option(value=i) #{i}							
 						td 
 							input(type='text', value=task.director, name='director')
 						td 
-							input(type='text', value=task.controller, name='controller')
+							select(required='', name='controller')
+								each i in usersArray
+									option(value=i.name) #{i.name}
 						td 
-							input(type='text', value=task.executor, name='executor')
+							select(required='', name='executor')
+								each i in usersArray
+									option(value=i.name) #{i.name}
 							//input(type='hidden', value=task.timeOfSet, name='timeOfSet')
 						td 
 							input(type='text', value=task.status, name='status')

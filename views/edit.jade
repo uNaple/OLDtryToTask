@@ -7,13 +7,11 @@ html
 	body
 		table(border='1', cellpadding='7')
 			tr 
-				//td(colspan='1', bgcolor='#D3EDF6', align='center') id
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Заголовок
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
-				//td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
 
@@ -23,20 +21,21 @@ html
 						input(type='hidden', value=task.id, name='id')
 						td
 							input(type='text', value=task.name, name='name') 
-						td 
-							//input(type='text', value=task.type, name='type')
+						td
 							select(required='', name='type')
 								optgroup(label="Тип задачи")
-									option(value='Чебурашка') Чебурашка
-									option(value='Крокодил Гена') Крокодил Гена
-									option(value='Шапокляк') Шапокляк
-									option(value='Крыса Лариса') Крыса Лариса	
+									each i in typeArray
+										option(value=i) #{i}
 						td 
 							input(type='text', value=task.director, name='director')
 						td 
-							input(type='text', value=task.controller, name='controller')
+							select(required='', name='controller')
+								each i in usersArray
+									option(value=i.name) #{i.name}
 						td 
-							input(type='text', value=task.executor, name='executor')
+							select(required='', name='executor')
+								each i in usersArray
+									option(value=i.name) #{i.name}
 							//input(type='text', value=task.timeOfSet, name='timeOfSet')
 						td 
 							input(type='text', value=task.status, name='status')
