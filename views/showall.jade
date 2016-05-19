@@ -8,7 +8,7 @@ html
 		table(border='1', cellpadding='7')
 			tr
 				//id не для юзера, а для компа
-				//td(colspan='1', bgcolor='#D3EDF6', align='center') id 					 
+				td(colspan='1', bgcolor='#D3EDF6', align='center') id 					 
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Заголовок
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
@@ -20,7 +20,7 @@ html
 
 			each i in rows
 				tr
-					//td= i[0]
+					td= i.id
 					td= i.name
 					td= i.type
 					td= i.director

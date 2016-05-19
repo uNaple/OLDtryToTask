@@ -87,7 +87,7 @@ function printInfo(){
 }
 //основные для работы
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
-	typeOfAction = ["Добавлена", "Переназначена", "status сменен на *"],
+	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
 	usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
 //для переназначения
@@ -138,7 +138,8 @@ app.get('/add', function(req,res){
 	var task = new myTask();
 	res.render('add', {
 		title: 'TASK MANAGER YOPTA',
-		task: task
+		task: task,
+		typeOfAction: typeOfAction
 	})
 })
 

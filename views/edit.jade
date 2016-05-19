@@ -24,7 +24,13 @@ html
 						td
 							input(type='text', value=task.name, name='name') 
 						td 
-							input(type='text', value=task.type, name='type', list='Users')
+							//input(type='text', value=task.type, name='type')
+							select(required='', name='type')
+								optgroup(label="Тип задачи")
+									option(value='Чебурашка') Чебурашка
+									option(value='Крокодил Гена') Крокодил Гена
+									option(value='Шапокляк') Шапокляк
+									option(value='Крыса Лариса') Крыса Лариса	
 						td 
 							input(type='text', value=task.director, name='director')
 						td 

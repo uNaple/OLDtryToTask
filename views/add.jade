@@ -18,17 +18,20 @@ html
 
 			tr
 				//-var task 
-				form(method='post', action='/addTask') 
+				form(method='post', action='/addTask', id='task') 
 					tr
 						input(type='hidden', value=task.id, name='id')
 						td
 							input(type='text', value=task.name, name='name') 
 						td 
-							input(type='text', value=task.type, name='type')
-							select#List
-								option red
-								option green
-								option blue
+							//input(type='text', value=task.type, name='type')
+							select(multpile='',name='type', form='task')
+								each i in typeOfAction
+									option(value='e') #{i}
+								//- option(value='Чебурашка') Чебурашка
+								//- option(value='Крокодил Гена') Крокодил Гена
+								//- option(value='Шапокляк') Шапокляк
+								//- option(value='Крыса Лариса') Крыса Лариса							
 						td 
 							input(type='text', value=task.director, name='director')
 						td 
