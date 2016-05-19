@@ -1,15 +1,18 @@
 "use strict";
 // var task = {
 // 	name : "task1",
-// 	director : "director",//постановщик
-// 	controller : "controller",//контроллер	
-// 	executor : "executor",//исполнитель
+// 	director : "director",//director
+
+// 	controller : "controller",//controller
+	
+// 	executor : "executor",//executor
+
 
 // 	timeOfSet : Date(),//Время установки
 // 	timeOfStart : Date(),//время начала
 // 	timeOfEnd : Date(),//время конца
 	
-// 	status : "В процессе",//статус задачи
+// 	status : "В процессе",//status задачи
 // 	parent : "insystem"//родитель
 
 // }
@@ -29,20 +32,24 @@ app.use(express.static(path.join(__dirname,'public')));
 
 function myTask() {           				//объект Задание
 	this.id = null;
-	this.name = 'New Task';//заголовок
-	this.type = null;//тип задачи: задача, подзадача, проект
-	this.director = 'insystem';//постановщик
-	this.controller = 'insystem';//контроллером изначально ставится директор	
-	this.executor = null;//исполнитель
+	this.name = 'New Task';//name
+
+	this.type = null;//type задачи: задача, подзадача, проект
+	this.director = 'insystem';//director
+
+	this.controller = 'insystem';//controllerом изначально ставится директор	
+	this.executor = null;//executor
+
 
 	this.timeOfSet = db.getNowDate();//Время установки
 	this.timeOfStart = null;//Время начала
 	this.timeOfEnd = null;//Время конца
 	
-	this.status = null;//статус задачи
+	this.status = null;//status задачи
 	this.parent = null;//родитель, если задача принадлежит проекту или является подзадачей
 
-	this.description = null;//описание
+	this.description = null;//description
+
 	this.reminder = null;//напоминание, дата когда напомнить
 	this.taskList = null;//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
 	this.repeat = null;//когда повторять, например задача отправить ЗП на определенное число месяца
@@ -80,7 +87,7 @@ function printInfo(){
 }
 //основные для работы
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
-	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
+	typeOfAction = ["Добавлена", "Переназначена", "status сменен на *"],
 	usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
 //для переназначения
@@ -96,18 +103,10 @@ var task1 = new myTask(),
 //db.createTable('TEST NULL TABLE');
 
 //db.deleteTable('tasks');
-//randomFill(20);
+//randomFill(10);
 //db.reassignTask(recieve,give);	
 //db.loadTask(process.argv[2]);
 //db.addTask(task1);
-
-// for(var i = 1; i < 6; i++){
-// 	task1.id = i;
-// 	task1.type = typeArray[getRandom(0,3)];
-// 	task1.description = 'fsddsgfdsf';
-// 	task1.name = 'GHKUda';
-// 	db.updateTask(task1);
-// }
 
 app.get('/', function(req, res){
 	res.render('index',{
@@ -144,7 +143,7 @@ app.get('/add', function(req,res){
 })
 
 app.post('/addTask', function(req, res){
-	console.log(req.body)
+	console.log(req.body);
 	db.addTask(req.body, function(err, result){
 		if(err)
 			console.log(err);
@@ -159,6 +158,11 @@ app.post('/addTask', function(req, res){
 	 })
 })
 
+app.get('/test', function(req, res){
+	res.render('test', {
+		title : 'test'
+	});
+})
 
 app.post('/show', function (req, res) {
 	// console.log('input id: ' + req.body.id || req.params.id || req.query.id);

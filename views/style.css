@@ -1,7 +1,13 @@
-body {
-  background-color: #494F4E;
-}
-
 h1 {
 	font-size: 50px;
+}
+
+body {
+    min-width: 400px;
+    margin: 0;
+    padding: 0;
+    font-family: arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+    background: #494F4E;;
 }

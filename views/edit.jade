@@ -13,28 +13,28 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
+				//td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
+				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+
 			tr
 				form(method='post', action='/update')
 					tr
-						input(type='hidden', value=task.id, name='id') 
+						input(type='hidden', value=task.id, name='id')
 						td
-							input(type='text', value=task.Заголовок, name='Заголовок') 
+							input(type='text', value=task.name, name='name') 
 						td 
-							input(type='text', value=task.Тип, name='Тип', list='Users')
+							input(type='text', value=task.type, name='type', list='Users')
 						td 
-							input(type='text', value=task.Постановщик, name='Постановщик')
+							input(type='text', value=task.director, name='director')
 						td 
-							input(type='text', value=task.Контроллер, name='Контроллер')
+							input(type='text', value=task.controller, name='controller')
 						td 
-							input(type='text', value=task.Исполнитель, name='Исполнитель')
+							input(type='text', value=task.executor, name='executor')
+							//input(type='text', value=task.timeOfSet, name='timeOfSet')
 						td 
-							input(type='text', value=task.Время_постановки, name='Время_постановки')
+							input(type='text', value=task.status, name='status')
 						td 
-							input(type='text', value=task.Статус, name='Статус')
-						td 
-							input(type='text', value=task.Описание, name='Описание')
+							input(type='text', value=task.description, name='description')
 					tr
 							input(type='submit', value='Применить')

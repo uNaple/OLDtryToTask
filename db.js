@@ -12,65 +12,62 @@ function connectDB(cb) { 						//коннект к ДБ
 	});					  
 }
 
-// myTask.prototype.addTask = 
 function addTask (obj, cb) {						//добавить задание 
 	obj.status = statusArray[3];				//Автоматически выставляется при добавлении
   // try {
 	connectDB( function (client) {
-		// if(obj.name == client.query(`SELECT * FROM tasks.tasks WHERE name = '${obj.name}';`, function(err, result){
-
-		// }))
 		var text = 'sometext';
-		obj.timeOfSet = getNowDate();
-		var queryHead = `INSERT INTO tasks.tasks(Заголовок, Постановщик, Контроллер, Время_постановки, Статус`,
-			queryTail = `VALUES('${obj.Имя}', 
-								'${obj.Постановщик}',
-								'${obj.Контроллер}',
-								'${obj.timeOfSet}',
-								'${obj.Статус}'`;
-		if(obj.Тип != null) {
-			queryHead += ', Тип';
-			queryTail += `, '${obj.Тип}'`;
+		var queryHead = `INSERT INTO tasks.tasks(name, director, controller, timeOfSet, status`,
+			queryTail = `VALUES('${obj.name}', 
+								'${obj.director}',
+								'${obj.controller}',
+								'${getNowDate()}',
+								'${obj.status}'`;
+		if(obj.type != null) {
+			queryHead += ', type';
+			queryTail += `, '${obj.type}'`;
 		}
-		if(obj.Исполнитель != null) {
-			queryHead += ', Исполнитель';
-			queryTail += `, '${obj.Исполнитель}'`;
+		if(obj.executor != null) {
+			queryHead += ', executor';
+			queryTail += `, '${obj.executor}'`;
 		}
-		if(obj.Описание != null) {
-			queryHead += ', Описание';
-			queryTail += `, '${obj.Описание}'`;
+		if(obj.description != null) {
+			queryHead += ', description';
+			queryTail += `, '${obj.description}'`;
 		}
 		queryHead += ')';
 		queryTail += ')';
 		var queryFinal = queryHead + queryTail + ' RETURNING id;';
 		client.query(queryFinal, function(err, result) {
-			    if (err) 
+			    if (err)
 			    	cb(err)
 			    else { 
 			    	console.log('Задача добавлена с id: ' + result.rows[0].id);
-			    	obj.id = result.rows[0].id;
-			    	cb(null, obj);
+			    	// obj.id = result.rows[0].id;
+			    	loadTask(result.rows[0].id, function(err,result){
+			    		if(err)
+			    			cb(err);
+			    		else 
+			    			cb(null,result);
+			    	});
 			    }
 		addHistory(client,"blahblah",typeOfAction[0]);	    
 		client.end();
 			});
 	});
-  // } 
-  // catch 
-  // 	return;
  }
 
 function updateTask (obj, cb){                      //обновить задание
 	connectDB(function(client) {
 		var query = `UPDATE tasks.tasks	SET `;      //создаем строку запроса
-		if(obj.Заголовок != null) {
-			query += `Заголовок = '${obj.Заголовок}'`;
+		if(obj.name != null) {
+			query += `name = '${obj.name}'`;
 		}
-		if(obj.Тип != null) {
-			query += `, Тип = '${obj.Тип}'`;
+		if(obj.type != null) {
+			query += `, type = '${obj.type}'`;
 		}
-		if(obj.Описание != null) {
-			query += `, Описание = '${obj.Описание}'`;
+		if(obj.description != null) {
+			query += `, description = '${obj.description}'`;
 		}
 		query += ` WHERE id = ${obj.id};`;
 		//console.log(query);
@@ -121,12 +118,12 @@ function loadTask(id, cb){							//передаю id и по нему получ
 
 function reassignTask(recieve, give) {			//Переназначить задание
 	//кто получает от кого получает
-	//меняем статус на ожидание, создаем новую задачу, в истории отмечаем что переназначили
+	//меняем status на ожидание, создаем новую задачу, в истории отмечаем что переназначили
 	connectDB(function(client){
 		client.query (`UPDATE tasks.tasks 
-			SET Исполнитель = '${recieve}', 
-				Статус = '${statusArray[4]}'
-			WHERE Исполнитель = '${give}'`, 
+			SET executor = '${recieve}', 
+				status = '${statusArray[4]}'
+			WHERE executor = '${give}'`, 
 		function(err, res){
 			if(err)
 				console.log('Ошибка при переназначении' + err);
@@ -144,22 +141,22 @@ function createTable(name) {					//создать таблицу, постави
 	case 'tasks':
 		var query = `CREATE TABLE tasks.tasks (
 			id SERIAL,
-			Заголовок varchar(30),
-			Тип varchar(30),
-			Постановщик varchar(30),
-			Контроллер varchar(20),
-			Исполнитель varchar(20),
-			Время_постановки timestamp without time zone,
-			Время_начала timestamp without time zone,
-			Время_окончания timestamp without time zone, 
-			Статус varchar(40), 
-			Родитель varchar(20),
-			Описание varchar(300));`         //PRIMARY KEY (id) через запятую можно указать несколько первичных ключей
+			name varchar(30),
+			type varchar(30),
+			director varchar(30),
+			controller varchar(20),
+			executor varchar(20),
+			timeOfSet timestamp without time zone,
+			timeOfStart timestamp without time zone,
+			timeOfEnd timestamp without time zone, 
+			status varchar(40), 
+			parent varchar(20),
+			description varchar(300));`         //PRIMARY KEY (id) через запятую можно указать несколько первичных ключей
 		break
 	case 'users':
 		var query = `CREATE TABLE tasks.users	(
 			id SERIAL,
-			Имя varchar(40));`
+			Namevarchar(40));`
 		break
 	case 'history':	
 		var query = `CREATE TABLE tasks.history (
@@ -221,7 +218,7 @@ function addHistory(client, text, action){      //добавить в табли
 }
 
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
-	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *", "Обновлено"],
+	typeOfAction = ["Добавлена", "Переназначена", "status сменен на *", "Обновлено"],
 	usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
 var name = 'lol',

@@ -9,25 +9,26 @@ html
 			tr
 				//id не для юзера, а для компа
 				//td(colspan='1', bgcolor='#D3EDF6', align='center') id 					 
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Заголовок
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Тип
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
+				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+
 			each i in rows
 				tr
-					//td= i.id
-					td= i.Заголовок
-					td= i.Тип
-					td= i.Постановщик
-					td= i.Контроллер
-					td= i.Исполнитель
-					td= i.Время_постановки
-					td= i.Статус
-					td= i.Описание
+					//td= i[0]
+					td= i.name
+					td= i.type
+					td= i.director
+					td= i.controller
+					td= i.executor
+					td= i.timeofset
+					td= i.status
+					td= i.description
 					td
 						form(method='post',action='/show')
 							input(type='hidden', value=i.id, name='id')

@@ -15,19 +15,20 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
-				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
+				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+
 			tr
 				-var task = JSON.stringify(tmpTask)
 				//td #{tmpTask.id}
-				td #{tmpTask.Заголовок}
-				td #{tmpTask.Тип}
-				td #{tmpTask.Постановщик}
-				td #{tmpTask.Контроллер}
-				td #{tmpTask.Исполнитель}
-				td #{tmpTask.Время_постановки}
-				td #{tmpTask.Статус}
-				td #{tmpTask.Описание}
+				td #{tmpTask.name}
+				td #{tmpTask.type}
+				td #{tmpTask.director}
+				td #{tmpTask.controller}
+				td #{tmpTask.executor}
+				td #{tmpTask.timeofset}
+				td #{tmpTask.status}
+				td #{tmpTask.description}
 				td
 					form(method='post',action='/edit')
 						input(type='hidden', value=task, name='task')
