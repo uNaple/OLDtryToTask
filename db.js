@@ -12,6 +12,30 @@ function connectDB(cb) { 							//коннект к ДБ
 	});					  
 }
 
+function getList(taskList, userList){
+	loadAll(function(err,result){
+		if(err)
+			console.log(err);
+		else {
+			result.forEach(function(item,i,result){
+				taskList[i] = item.name;
+			})
+			console.log(taskList);
+		}
+	})
+	loadAllUsers(function(err,result){
+		if(err)
+			console.log(err);
+		else {
+			result.forEach(function(item,i,result){
+				userList[i] = item.name;
+			})
+			console.log(userList);
+		}
+	})
+}
+
+
 function addTask (obj, cb) {						//добавить задание 
 	obj.status = statusArray[3];					//Автоматически выставляется при добавлении
   // try {
@@ -105,6 +129,9 @@ function updateTask (obj, cb){                      //обновить зада�
 		if(obj.executor != null) {
 			query += `, executor = '${obj.executor}'`;
 		}
+		if(obj.status != null) {
+			query += `, status = '${obj.status}'`;
+		}	
 		query += ` WHERE id = ${obj.id};`;
 		//console.log(query);
 		client.query(query, function(err, result) { //отправка запроса на обновление
@@ -277,5 +304,6 @@ module.exports = {
 	deleteTable: 	deleteTable,
 	reassignTask: 	reassignTask,
 	addUser:     	addUser,
-	loadAllUsers: 	loadAllUsers
+	loadAllUsers: 	loadAllUsers,
+	getList: 		getList
 };

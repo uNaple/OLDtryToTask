@@ -95,7 +95,8 @@ var statusArray  = ["В процессе", "Закончена", "Приоста
 	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
 	usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
-
+var taskList = new Array(),
+	userList = new Array();
 //для переназначения
 // var recieve = 'Леша',
 // 	give = 'Саша';
@@ -112,6 +113,7 @@ var statusArray  = ["В процессе", "Закончена", "Приоста
 //==================================================================================================================================================
 
 app.get('/', function(req, res){
+	db.getList(taskList, userList);
 	res.render('index',{
 				title: 'TASK MANAGER YOPTA'})
 })
@@ -154,7 +156,8 @@ app.get('/add', function(req,res){
 				title: 'TASK MANAGER YOPTA',
 				task: task,
 				typeArray: typeArray,
-				usersArray: result
+				usersArray: result,
+				statusArray: statusArray
 			})
 		}
 	})

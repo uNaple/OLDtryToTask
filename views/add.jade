@@ -26,7 +26,6 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') parent
 
 			tr
-				//-var task 
 				form(method='post', action='/addTask', id='task') 
 					tr
 						input(type='hidden', value=task.id, name='id')
@@ -46,17 +45,18 @@ html
 								each i in usersArray
 									option(value=i.name) #{i.name}
 						td 
-							select(required='', name='executor')
+							select(required='', name='executor', form='task')
 								each i in usersArray
 									option(value=i.name) #{i.name}
 							//input(type='hidden', value=task.timeOfSet, name='timeOfSet')
 						td 
-							input(type='text', value=task.status, name='status')
+							select(required='',name='status', form='task')
+								each i in statusArray
+									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
 						//a(class = (type == 'Подзадача' ) ? "visible" : "hidden")
-						-var typeOf = type
 						td
-							//input(type= (typeOf == 'Подзадача' ) ? 'text' : 'hidden', value=task.parent, name='parent')	
+							input(type='text', value=task.parent, name='parent')
 					tr
 						input(type='submit', value='Добавить')
