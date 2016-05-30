@@ -9,20 +9,33 @@ html
 		h1 задачки
 		table
 			tr
-				td 
+				td(align='left') 
 					form(method='get', action='/showall')
 						input(type='submit', value='Показать все задачи')
 			tr
-				td
-					form(method='post',action='/show') 
-						input(type='submit', value='Показать по id') 
-						input(type='text', name='id')
-					a(class = error ? "visible" : "hidden")
-					td
-						p #{error}
-			tr
-				td
+				td(align='left')
 					form(method='get', action='/add')
 						input(type='submit', value='Добавить новую задачу')
+			//- tr
+			//- 	td
+			//- 		form(method='post',action='/show') 
+			//- 			input(type='submit', value='Показать по id') 
+			//- 			input(type='text', name='id')
+			//- 		a(class = error ? "visible" : "hidden")
+			//- 		td
+			//- 			p #{error}
+			tr
+				td(align='left')
+					form(method='get', action='/showusers')
+						input(type='submit', value='Показать всех пользователей')
+			tr
+				td(align='left')
+					form(method='post', action='/addUser')
+						input(type='submit', value='Добавить нового пользователя')
+						input(type='text', name='userName')
+			//- tr
+			//- 	td(align='left')
+			//- 		form(method='get', action='/showUsers')
+			//- 			input(type='submit', value='Показать пользователей')					
 
 

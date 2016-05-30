@@ -22,6 +22,7 @@ html
 				//td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+				td(colspan='1', bgcolor='#D3EDF6', align='center') parent
 
 			tr
 				//-var task 
@@ -52,5 +53,9 @@ html
 							input(type='text', value=task.status, name='status')
 						td 
 							input(type='text', value=task.description, name='description')
+						//a(class = (type == 'Подзадача' ) ? "visible" : "hidden")
+						-var typeOf = type
+						td
+							//input(type= (typeOf == 'Подзадача' ) ? 'text' : 'hidden', value=task.parent, name='parent')	
 					tr
 						input(type='submit', value='Добавить')

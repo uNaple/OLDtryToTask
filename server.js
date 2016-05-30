@@ -125,7 +125,8 @@ app.post('/edit', function(req,res){
 						title: 			'TASK MANAGER YOPTA',
 						task: 			JSON.parse(req.body.task),
 						typeArray: 		typeArray,
-						usersArray: 	result
+						usersArray: 	result,
+						statusArray: 	statusArray
 			})
 		}
 	})
@@ -169,7 +170,31 @@ app.post('/addTask', function(req, res){
 			res.render('show', {
 				title: 		'TASK MANAGER YOPTA',
 				tmpTask: 	result
+			})
+		}
+	})
+})
 
+app.post('/addUser', function(req,res){
+	db.addUser(req.body.userName, function(err, result){
+		if(err)
+			console.log("Add user function " + err);
+		else {
+			console.log('Пользователь добавлен с id: ' + result.rows[0].id);
+			res.redirect('/showusers');
+		}
+	});    				//в переменной результаты запроса из БД
+	console.log(req.body.userName);
+})
+
+app.get('/showusers', function(req,res){
+	db.loadAllUsers(function(err, rows){
+		if(err)
+			console.log("Load All users function " + err);
+		else {
+			res.render('showusers', {
+	 			title:  'TASK MANAGER YOPTA',
+				rows:  	rows
 			})
 		}
 	})
@@ -223,7 +248,6 @@ app.use(function(req, res, next) {
         title: "404",
         msg: "ошибка 404"
     });
-
     // res.status(500).render("error", {
     //     title: "ошибка 500",
     //     msg: "ошибка 500"

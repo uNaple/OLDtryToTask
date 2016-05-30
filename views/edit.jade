@@ -27,7 +27,10 @@ html
 									each i in typeArray
 										option(value=i) #{i}
 						td 
-							input(type='text', value=task.director, name='director')
+							input(name='director', list='users')
+							datalist(id='users')
+								each i in usersArray
+									option(value=i.name)
 						td 
 							select(required='', name='controller')
 								each i in usersArray
@@ -38,7 +41,9 @@ html
 									option(value=i.name) #{i.name}
 							//input(type='text', value=task.timeOfSet, name='timeOfSet')
 						td 
-							input(type='text', value=task.status, name='status')
+							select(type='text', name='status')
+								each i in statusArray
+									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
 					tr

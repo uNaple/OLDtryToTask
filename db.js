@@ -58,15 +58,15 @@ function addTask (obj, cb) {						//добавить задание
 	});
  }
 
-function addUser(obj) {												//добавить пользователя
+function addUser(obj, cb) {												//добавить пользователя
 	connectDB(function (client) {
 		var query = `INSERT INTO tasks.users(name) 
 					 VALUES ('${obj}') RETURNING id`;
 		client.query(query, function(err, result) {
 		    if (err)
-		    	console.log(err)
+		    	cb(err);
 		    else
-		    	console.log('Пользователь добавлен с id: ' + result.rows[0].id);
+		    	cb(null, result)
 		    // obj.id = result.rows[0].id;
 			//addHistory(client,"blahblah",typeOfAction[0]);	    
 			client.end();
@@ -118,7 +118,7 @@ function updateTask (obj, cb){                      //обновить зада�
 	})
 }
 
-function loadAllUsers(cb){							//Получтиь всех пользваотелей. Принимает переменную, в которую посылает полученные из БД данные
+function loadAllUsers(cb){							//Получтиь всех пользователей. Принимает переменную, в которую посылает полученные из БД данные
 	connectDB( function(client){
 		var query = `SELECT * FROM tasks.users;`;
 		client.query(query, function (err, result){

@@ -1,0 +1,17 @@
+doctype html
+html
+	head
+		title #{title}
+		style
+			include style.css
+	body
+		a.button(href='/') На главную
+		table(border='1', cellpadding='7')
+			tr
+				//id не для юзера, а для компа
+				td(colspan='1', bgcolor='#D3EDF6', align='center') id 					 
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Имя
+			each i in rows
+				tr
+					td= i.id
+					td= i.name
