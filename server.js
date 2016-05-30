@@ -30,7 +30,7 @@ app.set('view engine', 'jade');
 app.set('views', './views');
 app.use(express.static(path.join(__dirname,'public')));
 
-function myTask() {           				//объект Задание
+function myTask() {           										//объект Задание
 	this.id = null;
 	this.name = 'New Task';//name
 
@@ -59,7 +59,7 @@ function getRandom(low,high){
 	return Math.floor(Math.random() * (high - low) + low);
 }
 
-function randomFill(num){					//Рандомное заполнение
+function randomFill(num){											//Рандомное заполнение
 	for(var i = 0; i < num; i++) {
 		var taskTMP = new myTask();
 		taskTMP.name = 'RandomName ' + i;
@@ -72,7 +72,7 @@ function randomFill(num){					//Рандомное заполнение
 	}
 }
 
-function userFill() {
+function userFill() {												//Заполнение юзерами
 	for(var i = 0; i < usersArray.length; i++)
 		db.addUser(usersArray[i]);
 }
@@ -109,14 +109,14 @@ var statusArray  = ["В процессе", "Закончена", "Приоста
 //db.addTask(task1);
 //randomFill(2);
 //userFill();
-//======================================================================================================================
+//==================================================================================================================================================
 
 app.get('/', function(req, res){
 	res.render('index',{
 				title: 'TASK MANAGER YOPTA'})
 })
-												//Редактирование задания
-app.post('/edit', function(req,res){
+												
+app.post('/edit', function(req,res){								//Форма для редактирования задания
 	db.loadAllUsers(function(err, result){
 		if(err)
 			console.log('Load all users func.' + err);
@@ -132,7 +132,7 @@ app.post('/edit', function(req,res){
 	})
 })
 
-app.post('/update', function(req,res){
+app.post('/update', function(req,res){								//Обработка обновления задания
 	console.log(req.body);
 	db.updateTask(req.body,	function(err){
 		if(err)
@@ -143,7 +143,7 @@ app.post('/update', function(req,res){
 		}
 	});
 })
-												//Добавление задания
+																	//Форма для добавления задания
 app.get('/add', function(req,res){
 	db.loadAllUsers(function(err, result){
 		var task = new myTask();
@@ -160,22 +160,19 @@ app.get('/add', function(req,res){
 	})
 })
 
-app.post('/addTask', function(req, res){
+app.post('/addTask', function(req, res){							//Обработка добавления задания
 	console.log(req.body);
 	db.addTask(req.body, function(err, result){
 		if(err)
 			console.log(err);
 		else {
 			console.log(result);
-			res.render('show', {
-				title: 		'TASK MANAGER YOPTA',
-				tmpTask: 	result
-			})
+			res.redirect('/show?id='+result.id);
 		}
 	})
 })
 
-app.post('/addUser', function(req,res){
+app.post('/addUser', function(req,res){  							//Добавление пользователя
 	db.addUser(req.body.userName, function(err, result){
 		if(err)
 			console.log("Add user function " + err);
@@ -183,11 +180,11 @@ app.post('/addUser', function(req,res){
 			console.log('Пользователь добавлен с id: ' + result.rows[0].id);
 			res.redirect('/showusers');
 		}
-	});    				//в переменной результаты запроса из БД
+	});
 	console.log(req.body.userName);
 })
 
-app.get('/showusers', function(req,res){
+app.get('/showusers', function(req,res){							//Отображение всех пользователей
 	db.loadAllUsers(function(err, rows){
 		if(err)
 			console.log("Load All users function " + err);
@@ -206,7 +203,7 @@ app.get('/test', function(req, res){
 	});
 })
 
-app.post('/show', function (req, res) {
+app.get('/show', function (req, res) {								//Отображение данных о задаче
 	// console.log('input id: ' + req.body.id || req.params.id || req.query.id);
 	//console.log(req.body.id);
 	db.loadTask(req.body.id || req.params.id || req.query.id, function(err, tmpTask){
@@ -225,8 +222,8 @@ app.post('/show', function (req, res) {
 	})	
 });
 
-app.get('/showall', function (req, res) {
-	db.loadAll(function(err, tmpTask){    				//в переменной результаты запроса из БД
+app.get('/showall', function (req, res) {							//Отображение всех задач
+	db.loadAll(function(err, tmpTask){    							//в переменной результаты запроса из БД
 		if(err)
 			console.log("LoadAll function " + err);
 		else {

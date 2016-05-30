@@ -15,3 +15,9 @@ html
 				tr
 					td= i.id
 					td= i.name
+		
+		.block1
+			form(method='post', action='/addUser')
+				input(type='submit', value='Добавить нового пользователя')
+				input(type='text', name='userName', align='left')
+

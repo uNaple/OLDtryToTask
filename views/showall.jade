@@ -31,6 +31,6 @@ html
 					td= i.status
 					td= i.description
 					td
-						form(method='post',action='/show')
+						form(method='get',action='/show')
 							input(type='hidden', value=i.id, name='id')
 							input(type='submit', value='Посмотреть')

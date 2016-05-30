@@ -1,4 +1,4 @@
-function connectDB(cb) { 						//коннект к ДБ
+function connectDB(cb) { 							//коннект к ДБ
 	var pg = require('pg');
 	var conString = "postgres://tasker:password@127.0.0.1:5432/tasks";//"tasks-postgres://tasker:password@127.0.0.1:5432/tasks"
 	var client = new pg.Client(conString);
@@ -38,13 +38,13 @@ function addTask (obj, cb) {						//добавить задание
 		queryHead += ')';
 		queryTail += ')';
 		var queryFinal = queryHead + queryTail + ' RETURNING id;';
-		client.query(queryFinal, function(err, result) {				//отправляем запрос
+		client.query(queryFinal, function(err, result) {						//отправляем запрос
 			    if (err)
 			    	cb(err)
 			    else { 
 			    	console.log('Задача добавлена с id: ' + result.rows[0].id);
 			    	// obj.id = result.rows[0].id;
-			    	loadTask(result.rows[0].id, function(err,result){	//возвращаем добавленную задачу
+			    	loadTask(result.rows[0].id, function(err,result){			//возвращаем добавленную задачу
 			    		if(err)
 			    			cb(err);
 			    		else {
@@ -58,7 +58,7 @@ function addTask (obj, cb) {						//добавить задание
 	});
  }
 
-function addUser(obj, cb) {												//добавить пользователя
+function addUser(obj, cb) {														//добавить пользователя
 	connectDB(function (client) {
 		var query = `INSERT INTO tasks.users(name) 
 					 VALUES ('${obj}') RETURNING id`;
@@ -74,7 +74,7 @@ function addUser(obj, cb) {												//добавить пользовател
 	})
 }
 
-function addHistory(client, text, action){      //добавить в таблицу истории
+function addHistory(client, text, action){      	//добавить в таблицу истории
 	client.query(`INSERT INTO tasks.history(Текст, Действие, Время)
 	VALUES('${text}',
 		   '${action}',
@@ -235,7 +235,7 @@ function createTable(name) {					//создать таблицу, постави
 	})
 }
 
-function deleteTable(name) {              		//удаление
+function deleteTable(name) {              		//удаление таблицы
 	var query = `DELETE FROM tasks.${name};`;
 	connectDB(function(client){
 		client.query(query, function(err, result){
@@ -256,8 +256,6 @@ function getNowDate(){
 	var today = objToday.getFullYear() + '-' + objToday.getMonth() + '-' +  objToday.getDate() + ' ' +  curHour + ":" + curMinute + ":" + curSeconds;
 	return today;                       //текущая дата в формате timestamp without time zone
 }
-
-
 
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
 	typeOfAction = ["Добавлена", "Переназначена", "status сменен на *", "Обновлено"],
