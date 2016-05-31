@@ -12,25 +12,25 @@ function connectDB(cb) { 							//коннект к ДБ
 	});					  
 }
 
-function getList(taskList, userList){
+function getList(taskList, userList){				//загрузка списка всех пользователей и списка задач для отображения в выпадающем списке
 	loadAll(function(err,result){
 		if(err)
-			console.log(err);
+			console.log('Get list tasks: '+err);
 		else {
 			result.forEach(function(item,i,result){
 				taskList[i] = item.name;
 			})
-			console.log(taskList);
+			//console.log(taskList);
 		}
 	})
 	loadAllUsers(function(err,result){
 		if(err)
-			console.log(err);
+			console.log('Get list users: '+err);
 		else {
 			result.forEach(function(item,i,result){
 				userList[i] = item.name;
 			})
-			console.log(userList);
+			//console.log(userList);
 		}
 	})
 }
@@ -58,6 +58,10 @@ function addTask (obj, cb) {						//добавить задание
 		if(obj.description != null) {
 			queryHead += ', description';
 			queryTail += `, '${obj.description}'`;
+		}
+		if(obj.parent != null) {
+			queryHead += ', parent';
+			queryTail += `, '${obj.parent}'`;
 		}
 		queryHead += ')';
 		queryTail += ')';
@@ -98,22 +102,22 @@ function addUser(obj, cb) {														//добавить пользовате
 	})
 }
 
-function addHistory(client, text, action){      	//добавить в таблицу истории
+function addHistory(client, text, action){      								//добавить в таблицу истории
 	client.query(`INSERT INTO tasks.history(Текст, Действие, Время)
 	VALUES('${text}',
 		   '${action}',
 		   '${getNowDate()}');`, function(err, res){
 		   	if(err)
-		   		console.log('Ошибка при добавлении в историю' + err);
+		   		console.log('Ошибка при добавлении в историю: ' + err);
 		   	else
 		   		console.log('Запись успешно добавлена в таблицу действий');
 	client.end();
 	});
 }
 
-function updateTask (obj, cb){                      //обновить задание
+function updateTask (obj, cb){                      							//обновить задание
 	connectDB(function(client) {
-		var query = `UPDATE tasks.tasks	SET `;      //создаем строку запроса
+		var query = `UPDATE tasks.tasks	SET `;      							//создаем строку запроса
 		if(obj.name != null) {
 			query += `name = '${obj.name}'`;
 		}
@@ -131,7 +135,10 @@ function updateTask (obj, cb){                      //обновить зада�
 		}
 		if(obj.status != null) {
 			query += `, status = '${obj.status}'`;
-		}	
+		}
+		if(obj.parent != null) {
+			query += `, parent = '${obj.parent}'`;
+		}
 		query += ` WHERE id = ${obj.id};`;
 		//console.log(query);
 		client.query(query, function(err, result) { //отправка запроса на обновление
@@ -162,14 +169,14 @@ function loadAllUsers(cb){							//Получтиь всех пользоват�
 	})
 }
 
-function loadAll(tmpTask){							//Получить все задачи. Принимает переменную, в которую посылает полученные из БД данные
-	connectDB( function(client){
+function loadAll(cb){							//Получить все задачи. Принимает переменную, в которую посылает полученные из БД данные
+	connectDB(function(client){
 		var query = `SELECT * FROM tasks.tasks;`;
 		client.query(query, function (err, result){
 			if(err)
-				tmpTask(err);
+				cb(err);
 			else 
-				tmpTask(null, result.rows);
+				cb(null, result.rows);
 			client.end();
 		})
 	})
@@ -280,7 +287,7 @@ function getNowDate(){
        	curHour = objToday.getHours() > 12 ? objToday.getHours() - 12 : (objToday.getHours() < 10 ? "0" + objToday.getHours() : objToday.getHours()),
        	curMinute = objToday.getMinutes() < 10 ? "0" + objToday.getMinutes() : objToday.getMinutes(),
        	curSeconds = objToday.getSeconds() < 10 ? "0" + objToday.getSeconds() : objToday.getSeconds();
-	var today = objToday.getFullYear() + '-' + objToday.getMonth() + '-' +  objToday.getDate() + ' ' +  curHour + ":" + curMinute + ":" + curSeconds;
+	var today = objToday.getFullYear() + '-' + (objToday.getMonth()+1) + '-' +  objToday.getDate() + ' ' +  curHour + ":" + curMinute + ":" + curSeconds;
 	return today;                       //текущая дата в формате timestamp without time zone
 }
 

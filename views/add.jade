@@ -39,15 +39,15 @@ html
 							input(name='director', list='users')
 							datalist(id='users')
 								each i in usersArray
-									option(value=i.name)
+									option(value=i)
 						td 
 							select(required='', name='controller')
 								each i in usersArray
-									option(value=i.name) #{i.name}
+									option(value=i) #{i}
 						td 
 							select(required='', name='executor', form='task')
 								each i in usersArray
-									option(value=i.name) #{i.name}
+									option(value=i) #{i}
 							//input(type='hidden', value=task.timeOfSet, name='timeOfSet')
 						td 
 							select(required='',name='status', form='task')
@@ -55,8 +55,9 @@ html
 									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
-						//a(class = (type == 'Подзадача' ) ? "visible" : "hidden")
 						td
-							input(type='text', value=task.parent, name='parent')
+							select(required='',name='parent', form='task')
+								each i in taskArray
+									option(value=i) #{i}
 					tr
 						input(type='submit', value='Добавить')

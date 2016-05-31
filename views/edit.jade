@@ -14,6 +14,7 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+				td(colspan='1', bgcolor='#D3EDF6', align='center') parent
 
 			tr
 				form(method='post', action='/update')
@@ -30,15 +31,15 @@ html
 							input(name='director', list='users')
 							datalist(id='users')
 								each i in usersArray
-									option(value=i.name)
+									option(value=i)
 						td 
 							select(required='', name='controller')
 								each i in usersArray
-									option(value=i.name) #{i.name}
+									option(value=i) #{i}
 						td 
 							select(required='', name='executor')
 								each i in usersArray
-									option(value=i.name) #{i.name}
+									option(value=i) #{i}
 							//input(type='text', value=task.timeOfSet, name='timeOfSet')
 						td 
 							select(type='text', name='status')
@@ -46,5 +47,9 @@ html
 									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
+						td
+							select(required='', name='parent', form='task')
+								each i in taskArray
+									option(value=i) #{i}
 					tr
 							input(type='submit', value='Применить')

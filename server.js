@@ -32,27 +32,27 @@ app.use(express.static(path.join(__dirname,'public')));
 
 function myTask() {           										//объект Задание
 	this.id = null;
-	this.name = 'New Task';//name
+	this.name = 'New Task';											//name
 
-	this.type = null;//type задачи: задача, подзадача, проект
-	this.director = 'insystem';//director
+	this.type = null;												//type задачи: задача, подзадача, проект
+	this.director = 'insystem';										//director
 
-	this.controller = 'insystem';//controllerом изначально ставится директор	
-	this.executor = null;//executor
+	this.controller = 'insystem';									//controllerом изначально ставится директор	
+	this.executor = null;											//executor
 
 
-	this.timeOfSet = db.getNowDate();//Время установки
-	this.timeOfStart = null;//Время начала
-	this.timeOfEnd = null;//Время конца
+	this.timeOfSet = db.getNowDate();								//Время установки
+	this.timeOfStart = null;										//Время начала
+	this.timeOfEnd = null;											//Время конца
 	
-	this.status = null;//status задачи
-	this.parent = null;//родитель, если задача принадлежит проекту или является подзадачей
+	this.status = null;												//status задачи
+	this.parent = null;												//родитель, если задача принадлежит проекту или является подзадачей
 
-	this.description = null;//description
+	this.description = null;										//description
 
-	this.reminder = null;//напоминание, дата когда напомнить
-	this.taskList = null;//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
-	this.repeat = null;//когда повторять, например задача отправить ЗП на определенное число месяца
+	this.reminder = null;											//напоминание, дата когда напомнить
+	this.taskList = null;											//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
+	this.repeat = null;												//когда повторять, например задача отправить ЗП на определенное число месяца
 }
 
 function getRandom(low,high){
@@ -90,13 +90,14 @@ function printInfo(){
 		})
 	});
 }
-//основные для работы
+																	//основные для работы
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
 	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
-	usersArray   = ["Саша", "Андрей", "Костя"],
+	//usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
-var taskList = new Array(),
-	userList = new Array();
+var taskList = new Array(),											//Список заданий
+	userList = new Array();											//Список пользователей
+
 //для переназначения
 // var recieve = 'Леша',
 // 	give = 'Саша';
@@ -119,19 +120,20 @@ app.get('/', function(req, res){
 })
 												
 app.post('/edit', function(req,res){								//Форма для редактирования задания
-	db.loadAllUsers(function(err, result){
-		if(err)
-			console.log('Load all users func.' + err);
-		else {
+	// db.loadAllUsers(function(err, result){
+	// 	if(err)
+	// 		console.log('Load all users func.' + err);
+	// 	else {
 			res.render('edit', {
 						title: 			'TASK MANAGER YOPTA',
 						task: 			JSON.parse(req.body.task),
 						typeArray: 		typeArray,
-						usersArray: 	result,
-						statusArray: 	statusArray
+						usersArray: 	userList,
+						statusArray: 	statusArray,
+						taskArray: 		taskList
 			})
-		}
-	})
+	// 	}
+	// })
 })
 
 app.post('/update', function(req,res){								//Обработка обновления задания
@@ -147,19 +149,13 @@ app.post('/update', function(req,res){								//Обработка обновл�
 })
 																	//Форма для добавления задания
 app.get('/add', function(req,res){
-	db.loadAllUsers(function(err, result){
-		var task = new myTask();
-		if(err)
-			console.log('Load all users func.' + err);
-		else {
-			res.render('add', {
-				title: 'TASK MANAGER YOPTA',
-				task: task,
-				typeArray: typeArray,
-				usersArray: result,
-				statusArray: statusArray
-			})
-		}
+	res.render('add', {
+		title: 			'TASK MANAGER YOPTA',
+		task: 			new myTask(),
+		typeArray: 		typeArray,
+		usersArray: 	userList,
+		statusArray: 	statusArray,
+		taskArray: 		taskList
 	})
 })
 
