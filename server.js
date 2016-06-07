@@ -17,7 +17,7 @@
 
 // }
 
-var db 			= require('./db');
+var db 			= require('./modules/db');
 var express 	= require('express');
 var app 		= express();
 var path		= require('path');
@@ -40,7 +40,6 @@ function myTask() {           										//объект Задание
 	this.controller = 'insystem';									//controllerом изначально ставится директор	
 	this.executor = null;											//executor
 
-
 	this.timeOfSet = db.getNowDate();								//Время установки
 	this.timeOfStart = null;										//Время начала
 	this.timeOfEnd = null;											//Время конца
@@ -51,7 +50,7 @@ function myTask() {           										//объект Задание
 	this.description = null;										//description
 
 	this.reminder = null;											//напоминание, дата когда напомнить
-	this.taskList = null;											//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
+	//this.taskList = null;											//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
 	this.repeat = null;												//когда повторять, например задача отправить ЗП на определенное число месяца
 }
 
@@ -113,8 +112,18 @@ var taskList = new Array(),											//Список заданий
 //userFill();
 //==================================================================================================================================================
 
-app.get('/', function(req, res){
+app.all('/add', function(req,res, next){
 	db.getList(taskList, userList);
+	next();
+})
+
+app.all('/edit', function(req,res, next){
+	db.getList(taskList, userList);
+	next();
+})
+
+app.get('/', function(req, res){
+	// db.getList(taskList, userList);		//попробовать сделать app.all
 	res.render('index',{
 				title: 'TASK MANAGER YOPTA'})
 })
@@ -147,6 +156,7 @@ app.post('/update', function(req,res){								//Обработка обновл�
 		}
 	});
 })
+
 																	//Форма для добавления задания
 app.get('/add', function(req,res){
 	res.render('add', {
@@ -222,18 +232,35 @@ app.get('/show', function (req, res) {								//Отображение данн�
 });
 
 app.get('/showall', function (req, res) {							//Отображение всех задач
-	db.loadAll(function(err, tmpTask){    							//в переменной результаты запроса из БД
+	db.loadAll(function(err, result){    							//в переменной результаты запроса из БД
 		if(err)
 			console.log("LoadAll function " + err);
 		else {
 			res.render('showall', {
 	 			title:  'TASK MANAGER YOPTA',
-				rows:  	tmpTask})
-			}
-		})
-	}
-);
+				rows:  	result
+			})
+		}
+	})
+})
 
+app.post('/showSubTask', function(req,res){
+	//console.log(JSON.parse(req.body.task).parent); //JSON объекты с двойными кавычками. Являются просто текстом, поэтому парсим и потом берем то что надо
+	//var parent = JSON.parse(req.body.task).parent;//console.log(req.body.task);
+	db.loadSubTask(JSON.parse(req.body.task).parent, function(err, result){
+		//console.log(result);
+		if(err) {						//если нет подзадач рисовать сообщение об этом на странице
+			console.log(err);
+			res.send('Errorrsa123');
+		}
+		else {
+			res.render('showall', {
+	 			title:  'TASK MANAGER YOPTA',
+				rows:  	result
+			})
+		}
+	})		
+})
 // app.post('/', function(req,res,next){
 // 	task2.name = req.body.title;
 // 	console.log(req.body.title + " " + req.body.data);

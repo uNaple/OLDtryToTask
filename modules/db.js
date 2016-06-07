@@ -9,7 +9,7 @@ function connectDB(cb) { 							//коннект к ДБ
 			throw new Error('could not connect to postgres');
  		}
 		cb(client);
-	});					  
+	});					   	
 }
 
 function getList(taskList, userList){				//загрузка списка всех пользователей и списка задач для отображения в выпадающем списке
@@ -67,22 +67,22 @@ function addTask (obj, cb) {						//добавить задание
 		queryTail += ')';
 		var queryFinal = queryHead + queryTail + ' RETURNING id;';
 		client.query(queryFinal, function(err, result) {						//отправляем запрос
-			    if (err)
-			    	cb(err)
-			    else { 
-			    	console.log('Задача добавлена с id: ' + result.rows[0].id);
-			    	// obj.id = result.rows[0].id;
-			    	loadTask(result.rows[0].id, function(err,result){			//возвращаем добавленную задачу
-			    		if(err)
-			    			cb(err);
-			    		else {
-			    			cb(null,result);
-							addHistory(client,"blahblah",typeOfAction[0]);	    //добавляем в историю
-						}
-			    	});
-			    }
-				client.end();
-			});
+		    if (err)
+		    	cb(err)
+		    else { 
+		    	console.log('Задача добавлена с id: ' + result.rows[0].id);
+		    	// obj.id = result.rows[0].id;
+		    	loadTask(result.rows[0].id, function(err,result){			//возвращаем добавленную задачу
+		    		if(err)
+		    			cb(err);
+		    		else {
+		    			cb(null,result);
+						addHistory(client,"blahblah",typeOfAction[0]);	    //добавляем в историю
+					}
+		    	});
+		    }
+			client.end();
+		});
 	});
  }
 
@@ -197,7 +197,30 @@ function loadTask(id, cb){							//передаю id и по нему получ
 			}
 			else 
 				cb(null,result.rows[0]);
-				// console.log(result.rows[0]);
+				//console.log(result.rows[0]);
+			client.end();
+		})
+	})
+}
+
+function loadSubTask(parent, cb){										//передаю parent, сделать передачу по id родителя
+	connectDB(function(client){						
+		var query = `SELECT * FROM tasks.tasks WHERE parent='${parent}';`
+		//console.log(query);
+		client.query(query, function(err, result){
+			//console.log(result);
+			if(err){
+				//var err = new Error('Load subtask error');
+				cb(err)				
+			}
+			else if(result.rowCount == 0) {
+				var err = new Error('Нет подзадач');
+				cb(err);	
+			}
+			else {
+				//console.log(result.rows);
+				cb(null, result.rows);
+			}
 			client.end();
 		})
 	})
@@ -312,5 +335,6 @@ module.exports = {
 	reassignTask: 	reassignTask,
 	addUser:     	addUser,
 	loadAllUsers: 	loadAllUsers,
-	getList: 		getList
+	getList: 		getList,
+	loadSubTask: 	loadSubTask
 };
