@@ -22,7 +22,7 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
-
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Родитель
 			tr
 				-var task = JSON.stringify(tmpTask)
 				//td #{tmpTask.id}
@@ -34,6 +34,7 @@ html
 				td #{tmpTask.timeofset}
 				td #{tmpTask.status}
 				td #{tmpTask.description}
+				td #{tmpTask.parent}
 				td
 					form(method='post',action='/edit')
 						input(type='hidden', value=task, name='task')
@@ -45,4 +46,4 @@ html
 						//-input(type='button', value='Посмотреть подзадачи')
 						input(type='button', value='Посмотреть подзадачи', onclick="getData(this.form.task.value)")
 		include test.jade
-		script(type='text/javascript', src='testScript.js')
+		script(src='testScript.js')

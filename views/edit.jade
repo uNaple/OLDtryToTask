@@ -14,16 +14,16 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
-				td(colspan='1', bgcolor='#D3EDF6', align='center') parent
+				td(colspan='1', bgcolor='#D3EDF6', align='center', id='idParent1') parent
 
 			tr
-				form(method='post', action='/update')
+				form(method='post', action='/update', name='name1')
 					tr
 						input(type='hidden', value=task.id, name='id')
 						td
 							input(type='text', value=task.name, name='name') 
 						td
-							select(required='', name='type')
+							select(required='', name='type', onchange='checkParent(value)', id='type')
 								optgroup(label="Тип задачи")
 									each i in typeArray
 										option(value=i) #{i}
@@ -47,9 +47,10 @@ html
 									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
-						td
-							select(required='', name='parent', form='task')
+						td(id='idParent2')
+							select(required='', name='parent', form='task', select='type')
 								each i in taskArray
 									option(value=i) #{i}
 					tr
 							input(type='submit', value='Применить')
+	script(src='display.js')
