@@ -68,8 +68,6 @@ module.exports = function(app, express){
 		db.loadTask(req.body.id || req.params.id || req.query.id, function(err, tmpTask){
 			if(err){
 				console.log(err.message);
-				// res.render('index', {
-				// 				error: err.message})
 			}
 			else {
 				res.render('show', {
@@ -124,14 +122,20 @@ module.exports = function(app, express){
 	}
 
 	function edit(req,res){
-		res.render('edit', {
-					title: 			'TASK MANAGER YOPTA',
-					task: 			JSON.parse(req.body.task),
-					typeArray: 		typeArray,
-					usersArray: 	userList,
-					statusArray: 	statusArray,
-					taskArray: 		taskList
+		db.getList(function(err, userList, taskList){
+			if(err)
+				console.log('Edit ' + err)
+			else {
+				res.render('edit', {
+							title: 			'TASK MANAGER YOPTA',
+							task: 			JSON.parse(req.body.task),
+							typeArray: 		typeArray,
+							usersArray: 	userList,
+							statusArray: 	statusArray,
+							taskArray: 		taskList
 				})
+			}
+		})
 	}
 
 	function update(req,res){
@@ -145,32 +149,31 @@ module.exports = function(app, express){
 		})
 	}
 
-
-	function addTask(req,res){
-		db.addUser(req.body.userName, function(err, result){
-			if(err)
-				console.log("Add user function " + err);
-			else {
-				console.log('Пользователь добавлен с id: ' + result.rows[0].id);
-				res.redirect('/showusers');
-			}
-		});
-		console.log(req.body.userName);
-	}
-
 	function showSubTask(req,res){
-		db.loadSubTask(JSON.parse(req.body.task).parent, function(err, result){
+		db.loadSubTask(JSON.parse(req.body.task).name, function(err, result){
 			//console.log(result);
 			if(err) {						//если нет подзадач рисовать сообщение об этом на странице
 				console.log(err);
 				//alert('No sub tasks');
-				res.send('Errorrsa123');
+				res.send('Have not subtasks');
 			}
 			else {
 				res.render('showall', {
 		 			title:  'TASK MANAGER YOPTA',
 					rows:  	result
 				})
+			}
+		})
+	}
+
+	function addTask(req, res){							//Обработка добавления задания
+		console.log(req.body);
+		db.addTask(req.body, function(err, result){
+			if(err)
+				console.log(err);
+			else {
+				console.log(result);
+				res.redirect('/show?id='+result.id);
 			}
 		})
 	}

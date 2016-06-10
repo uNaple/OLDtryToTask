@@ -18,6 +18,7 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Родитель
 
 			each i in rows
 				tr
@@ -30,6 +31,7 @@ html
 					td= i.timeofset
 					td= i.status
 					td= i.description
+					td= i.parent
 					td
 						form(method='get',action='/show')
 							input(type='hidden', value=i.id, name='id')

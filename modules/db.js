@@ -14,34 +14,6 @@ function connectDB(cb) { 							//коннект к ДБ
 	});					   	
 }
 
-function toListTask(){
-	var taskList = new Array();
-	loadAll(function(err,result){
-		if(err)
-			console.log(err);
-		else {
-			for(var i = 0; i < result.length; i++)
-				taskList[i] = result[i].name;
-			return (taskList);
-			//console.log(taskList);
-		}
-	})
-}
-
-function toListUser(){
-	loadAllUsers(function(err,result){
-		var userListTmp = new Array();
-		if(err)
-			console.log(err);
-		else {
-			for(var i = 0; i < result.length; i++)
-				userListTmp[i] = result[i].name;
-			return userListTmp;
-			//console.log(userListTmp + '    1232131');
-		}
-	})
-}
-
 function getList(cb){
 	var userList = new Array(),
 		taskList = new Array();
