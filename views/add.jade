@@ -23,10 +23,10 @@ html
 				//td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
-				td(colspan='1', bgcolor='#D3EDF6', align='center') parent
+				td(colspan='1', bgcolor='#D3EDF6', align='center', id='parentId1') parent
 
 			tr
-				form(method='post', action='/addTask', id='task') 
+				form(method='post', action='/addtask', id='task') 
 					tr
 						input(type='hidden', value=task.id, name='id')
 						td
@@ -39,7 +39,7 @@ html
 							input(name='director', list='users')
 							datalist(id='users')
 								each i in usersArray
-									option(value=i)
+									option(value=i) #{i}
 						td 
 							select(required='', name='controller')
 								each i in usersArray
@@ -55,9 +55,11 @@ html
 									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
+						//-var taskArray = getTaskArr()
 						td
 							select(required='',name='parent', form='task')
 								each i in taskArray
 									option(value=i) #{i}
 					tr
 						input(type='submit', value='Добавить')
+	script(src='display.js')

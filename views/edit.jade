@@ -47,6 +47,7 @@ html
 									option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
+						//- /-var taskArray = getTaskArr()
 						td(id='idParent2')
 							select(required='', name='parent', form='task', select='type')
 								each i in taskArray

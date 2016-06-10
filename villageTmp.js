@@ -8,15 +8,14 @@
   }
 })(this, function() {
   'use strict';
-
   var gameName = "Village Game";
   function logger(data, type){
+    var filemane = Logs;
     var bg = 'FBC02D';
          if ( type == 1 ) { bg = '388E3C' }
     else if ( type == 2 ) { bg = '2196F3' }
     else if ( type == 3 ) { bg = 'FB8C00' }
     else if ( type == 4 ) { bg = 'E91E63' }
-    else if ( type == 5 ) { bd = '9EA230' } 
     var n = "color: #2196F3;",
         r = "background: #" + bg +"; color: #fff;",
         a = new Date();
@@ -36,7 +35,6 @@
     this.resources = {};
     this.isWorking = false;
     this.inQuest = false;
-    this.inFight = false;
     this.lastText = '';
     this.lastAction = '';
     this.init();
@@ -49,7 +47,6 @@
     this.startWatching(this.history);
     var self = this,
     scroller = document.querySelector('.im_history_scrollable_wrap');
-    
     this.interval = setInterval(function(){
       // disable render freezes (подрачиваем поле сообщений вверх-вниз)
       scroller.scrollTop -= 10;
@@ -59,18 +56,13 @@
       },500);
 
       // Main actions
-      if(!self.isWorking && !self.inQuest) {
-        if(!self.inFight) {
-          self.newBreadHarvesting();
-        }
-        else {
-          self.gotoFight();
-        }
-      }
-      else {
-          self.gotoQuest();
-      }
-    }, 10000);
+      // if(!self.isWorking && !self.inQuest) {
+      //   self.newBreadHarvesting();
+      // }
+      // else {
+      //   self.gotoQuest();
+      // }
+    }, 500);
   };
 
   Village.prototype.clickButton = function(btnRe, actName, logText, logType, isWorking, inQuest) {
@@ -136,7 +128,14 @@
                 }
                 if (self.lastText != textToSend) {
                   self.lastText = textToSend;
-                  self.newMessage(textToSend);
+                  if(self.newMessage(textToSend)){
+                    if(!self.isWorking && !self.inQuest) {
+                      self.newBreadHarvesting();
+                    }
+                    else {
+                      self.gotoQuest();
+                    }
+                  }
                 }
               }
             }
@@ -155,8 +154,6 @@
     var self = this;
     if (msg.match(/Урожай:/)) self.updateResources(msg);
 
-
-    
     if (msg.match(/^Работа окончена/)) {
       self.isWorking = false;
       self.findButtonAndClick();
@@ -189,23 +186,6 @@
       return true;
     }
 
-     //Start fight
-    if (msg.match(/^Вы можете сражаться с другими/)) {
-      self.searchFight();
-    }
-
-    if (msg.match(/^Ваш противник/)) {
-      self.startFight();
-    }
-
-    if (msg.match(/^Во время боя противник/)) {
-      self.helpInFight();
-    }
-
-    if (msg.match(/^(Наши войска без особых|Мы выиграли эту битву)/)) {
-      self.finishFight();
-    }
-
     self.isWorking = false;
     self.inQuest = false;
     return true;
@@ -233,12 +213,8 @@
       this.sellBread();
     }
 
-    if (this.resources.gold > 1500) {
-      this.inFight = true;
-      // this.gotoFight();
-    }
-    if (this.resources.gold < 500) {
-      this.inFight = false;
+    if (this.resources.gold > 100) {
+      // go to attack!!!
     }
   };
 
@@ -256,7 +232,7 @@
 
 
   Village.prototype.findButtonAndClick = function() {
-    var re = /(Спасти деревню|Выполнить задание|Отправить подмогу|back)/;
+    var re = /(Работать|Спасти деревню|Выполнить задание|Отправить подмогу|back)/;
     this.clickButton(re, 'nextStep', 'Fuck-fuck-fuck', 2, true, null);
   };
 
@@ -278,27 +254,6 @@
   };
   Village.prototype.finishQuest = function(){
     this.clickButton(/back/, 'finishQuest', 'Quest ⭐⭐⭐ finished', 4, null, false);
-  };
-
-  // Fights logic
-  Village.prototype.gotoFight = function(){
-    this.clickButton(/В бой/, 'gotoFight', 'Go to fight', 5, null, null)
-  };
-
-  Village.prototype.searchFight = function(){
-    this.clickButton(/Поиск противника/, 'searchFight', 'Search fight', 5, null, null)
-  };
-
-  Village.prototype.startFight = function(){
-    this.clickButton(/Начать бой/, 'startFight', 'Start fight', 5, null, null)
-  };
-
-  Village.prototype.helpInFight = function(){
-    this.clickButton(/Отправить пополнение/, 'helpInFight', 'Help in fight', 5, null, null)
-  };
-
-  Village.prototype.finishFight = function(){
-    this.clickButton(/В деревню/, 'finishFight', 'Finish in fight', 5, null, null)
   };
 
   Village.prototype.debugGameObject = function() {

@@ -1,3 +1,5 @@
+var async = require('async');
+
 function connectDB(cb) { 							//коннект к ДБ
 	var pg = require('pg');
 	var conString = "postgres://tasker:password@127.0.0.1:5432/tasks";//"tasks-postgres://tasker:password@127.0.0.1:5432/tasks"
@@ -12,29 +14,61 @@ function connectDB(cb) { 							//коннект к ДБ
 	});					   	
 }
 
-function getList(taskList, userList){				//загрузка списка всех пользователей и списка задач для отображения в выпадающем списке
+function toListTask(){
+	var taskList = new Array();
 	loadAll(function(err,result){
 		if(err)
-			console.log('Get list tasks: '+err);
+			console.log(err);
 		else {
-			result.forEach(function(item,i,result){
-				taskList[i] = item.name;
-			})
+			for(var i = 0; i < result.length; i++)
+				taskList[i] = result[i].name;
+			return (taskList);
 			//console.log(taskList);
-		}
-	})
-	loadAllUsers(function(err,result){
-		if(err)
-			console.log('Get list users: '+err);
-		else {
-			result.forEach(function(item,i,result){
-				userList[i] = item.name;
-			})
-			//console.log(userList);
 		}
 	})
 }
 
+function toListUser(){
+	loadAllUsers(function(err,result){
+		var userListTmp = new Array();
+		if(err)
+			console.log(err);
+		else {
+			for(var i = 0; i < result.length; i++)
+				userListTmp[i] = result[i].name;
+			return userListTmp;
+			//console.log(userListTmp + '    1232131');
+		}
+	})
+}
+
+function getList(cb){
+	var userList = new Array(),
+		taskList = new Array();
+	loadAllUsers(function(err,result){
+		var userListTmp = new Array();
+		if(err)
+			console.log(err);
+		else {
+			for(var i = 0; i < result.length; i++)
+				userList[i] = result[i].name;
+			loadAll(function(err,result){
+				if(err)
+					console.log(err);
+				else {
+					for(var i = 0; i < result.length; i++)
+						taskList[i] = result[i].name;
+					cb(null, userList, taskList);
+				}
+			})			
+		}
+	})
+}
+
+// function getList(cb){					//загрузка списка всех пользователей и списка задач для отображения в выпадающем списке
+// 	console.log(toListUser(), toListTask())
+// 	//cb(null, toListUser(), toListTask());
+// }
 
 function addTask (obj, cb) {						//добавить задание 
 	obj.status = statusArray[3];					//Автоматически выставляется при добавлении
@@ -336,5 +370,7 @@ module.exports = {
 	addUser:     	addUser,
 	loadAllUsers: 	loadAllUsers,
 	getList: 		getList,
-	loadSubTask: 	loadSubTask
+	loadSubTask: 	loadSubTask,
+	// toListTask: 	toListTask,
+	// toListUser: 	toListUser 
 };
