@@ -23,7 +23,7 @@ html
 				//td(colspan='1', bgcolor='#D3EDF6', align='center') Время постановки
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
-				td(colspan='1', bgcolor='#D3EDF6', align='center', id='parentId1') parent
+				td(colspan='1', bgcolor='#D3EDF6', align='center', id='idParent1') parent
 
 			tr
 				form(method='post', action='/addtask', id='task') 
@@ -32,9 +32,12 @@ html
 						td
 							input(type='text', value=task.name, name='name') 
 						td
-							select(multpile='',name='type', form='task')
+							select(onchange='checkParent(value)',name='type', form='task')
 								each i in typeArray
-									option(value=i) #{i}							
+									if (i == 'Подзадача')
+										option(value=i, selected) #{i}							
+									else 
+										option(value=i) #{i}							
 						td 
 							input(name='director', list='users')
 							datalist(id='users')
@@ -56,10 +59,10 @@ html
 						td 
 							input(type='text', value=task.description, name='description')
 						//-var taskArray = getTaskArr()
-						td
+						td(id='idParent2')
 							select(required='',name='parent', form='task')
 								each i in taskArray
 									option(value=i) #{i}
 					tr
 						input(type='submit', value='Добавить')
-		script(src='display.js')
+	script(src='display.js')
