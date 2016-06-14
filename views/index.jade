@@ -29,10 +29,19 @@ html
 					form(method='get', action='/showusers')
 						input(type='submit', value='Показать всех пользователей')
 			tr
-				td(align='left')
-					form(method='post', action='/adduser')
-						input(type='submit', value='Добавить нового пользователя')
-						input(type='text', name='userName')
+				td
+					form(method='post', action='/login')
+						input(type='submit', value='Авторизация')
+						input(type='text', name='username')
+						input(type='text', name='password')
+
+
+					
+			//- tr
+			//- 	td(align='left')
+			//- 		form(method='post', action='/adduser')
+			//- 			input(type='submit', value='Добавить нового пользователя')
+			//- 			input(type='text', name='userName')
 			//- tr
 			//- 	td(align='left')
 			//- 		form(method='get', action='/showUsers')

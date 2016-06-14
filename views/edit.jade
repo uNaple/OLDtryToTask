@@ -14,7 +14,8 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
 				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
-				td(colspan='1', bgcolor='#D3EDF6', align='center', id='idParent1') parent
+				if (task.type == 'Подзадача')
+					td(colspan='1', bgcolor='#D3EDF6', align='center', id='idParent1') parent
 
 			tr
 				form(method='post', action='/update', name='name1')
@@ -23,35 +24,49 @@ html
 						td
 							input(type='text', value=task.name, name='name') 
 						td
-							select(required='', name='type', onchange='checkParent(value)', id='type')
-								optgroup(label="Тип задачи")
-									each i in typeArray
+							select(required='', name='type', onchange='checkParent(value)', id='type', value=task.type)
+								//-optgroup(label="Тип задачи")
+								each i in typeArray
+									if (i == task.type)
+										option(value=i, selected) #{i}
+									else
 										option(value=i) #{i}
+						//- -var userArray = getUserList();
+						//- -var taskArray 	= getTaskList(); 
 						td 
-							input(name='director', list='users')
+							input(name='director', list='users', value=task.director)
 							datalist(id='users')
-								each i in usersArray
+								each i in userArray
 									option(value=i)
 						td 
-							select(required='', name='controller')
-								each i in usersArray
-									option(value=i) #{i}
+							select(required='', name='controller', selected)
+								each i in userArray
+									if (i == task.controller)
+										option(value=i, selected) #{i}
+									else 
+										option(value = i) #{i}
 						td 
 							select(required='', name='executor')
-								each i in usersArray
-									option(value=i) #{i}
+								each i in userArray
+									if (i == task.executor)
+										option(value=i, selected) #{i}
+									else
+										option(value=i) #{i}
 							//input(type='text', value=task.timeOfSet, name='timeOfSet')
 						td 
 							select(type='text', name='status')
 								each i in statusArray
-									option(value=i) #{i}
+									if (i == task.status)
+										option(value=i, selected) #{i}
+									else
+										option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
-						//- /-var taskArray = getTaskArr()
-						td(id='idParent2')
-							select(required='', name='parent', form='task', select='type')
-								each i in taskArray
-									option(value=i) #{i}
+						if (task.type == 'Подзадача')
+							td(id='idParent2')
+								select(required='', name='parent', form='task')
+									each i in taskArray
+										option(value=i) #{i}
 					tr
 							input(type='submit', value='Применить')
 	script(src='display.js')

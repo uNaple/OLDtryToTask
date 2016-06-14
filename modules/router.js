@@ -1,10 +1,9 @@
 var db 			= require('./db'),
 	path		= require('path'),
 	bodyParser 	= require('body-parser'),
-	async 		= require('async');
+	async 		= require('async'),
+	auth		= require('./auth');
 
-// var taskList = new Array(),											//Список заданий
-// 	userList = new Array();											//Список пользователей
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
 	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
 	typeArray    = ['Проект','Задача','Подзадача'];
@@ -25,6 +24,7 @@ function myTask() {           										//объект Задание
 	
 	this.status = null;												//status задачи
 	this.parent = null;												//родитель, если задача принадлежит проекту или является подзадачей
+	this.child	= null;												//набор подзадач, для этого проекта
 
 	this.description = null;										//description
 
@@ -54,7 +54,7 @@ module.exports = function(app, express){
 	//действия по нажатию кнопок. сделать норм обработку, чтоб не было отдельного адреса на действия
 	app.post('/addtask', addTask);			//Обработка добавления задания
 	app.post('/update', update);			//Обработка обновления задания
-	app.post('/showsubtask', showSubTask);
+	app.post('/showsubtask', showSubTask);	//показать подзадачи
 	app.post('/adduser', addUser);			//Добавление пользователя
 
 	//================================================================HANDLER
@@ -126,11 +126,12 @@ module.exports = function(app, express){
 			if(err)
 				console.log('Edit ' + err)
 			else {
+				console.log(JSON.parse(req.body.task));
 				res.render('edit', {
 							title: 			'TASK MANAGER YOPTA',
 							task: 			JSON.parse(req.body.task),
 							typeArray: 		typeArray,
-							usersArray: 	userList,
+							userArray: 		userList,
 							statusArray: 	statusArray,
 							taskArray: 		taskList
 				})
@@ -151,10 +152,8 @@ module.exports = function(app, express){
 
 	function showSubTask(req,res){
 		db.loadSubTask(JSON.parse(req.body.task).name, function(err, result){
-			//console.log(result);
-			if(err) {						//если нет подзадач рисовать сообщение об этом на странице
+			if(err) {															//если нет подзадач рисовать сообщение об этом на странице
 				console.log(err);
-				//alert('No sub tasks');
 				res.send('Have not subtasks');
 			}
 			else {
@@ -166,7 +165,7 @@ module.exports = function(app, express){
 		})
 	}
 
-	function addTask(req, res){							//Обработка добавления задания
+	function addTask(req, res){													//Обработка добавления задания
 		console.log(req.body);
 		db.addTask(req.body, function(err, result){
 			if(err)

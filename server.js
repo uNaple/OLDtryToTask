@@ -4,6 +4,7 @@ var db 			= require('./modules/db'),
 	express 	= require('express'),
 	app 		= express(),
 	router		= require('./modules/router')(app,express),
+	auth		= require('./modules/router')(app,express),
 	path		= require('path'),
 	bodyParser 	= require('body-parser');
 

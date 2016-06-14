@@ -1,5 +1,3 @@
-var async = require('async');
-
 function connectDB(cb) { 							//коннект к ДБ
 	var pg = require('pg');
 	var conString = "postgres://tasker:password@127.0.0.1:5432/tasks";//"tasks-postgres://tasker:password@127.0.0.1:5432/tasks"
@@ -36,11 +34,6 @@ function getList(cb){
 		}
 	})
 }
-
-// function getList(cb){					//загрузка списка всех пользователей и списка задач для отображения в выпадающем списке
-// 	console.log(toListUser(), toListTask())
-// 	//cb(null, toListUser(), toListTask());
-// }
 
 function addTask (obj, cb) {						//добавить задание 
 	obj.status = statusArray[3];					//Автоматически выставляется при добавлении

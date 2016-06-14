@@ -1,7 +1,7 @@
 var db = require('../modules/db');
 
 function checkParent(value){
-	alert('imhere');
+	// /alert('imhere');
 	if(value == 'Подзадача') {
 		document.getElementById('idParent1').hidden = false;
 		document.getElementById('idParent2').hidden = false;
@@ -12,16 +12,24 @@ function checkParent(value){
 	}
 }
 
-function getTaskArr(){
-	db.loadAll(function(err,result){
-		if(err)
-			console.log('Get list tasks: '+err);
-		else {
-			result.forEach(function(item,i,result){
-				var taskList[i] = item.name;
-			})
-			//console.log(taskList);
-			return taskList;
-		}
-	})
-}
+// function getList(){
+// 	db.getList(function(err, userList, taskList){
+// 		if(err)
+// 			console.log('display get list: ')
+// 		else {
+// 			var userList = userList,
+// 				taskList = taskList;
+// 			console.log(userList + taskList);
+// 		}
+// 	})	
+// }
+
+// function getUserList(){
+// 	var userList = [1,2,3];
+// 	return userList;
+// }
+
+// function getTaskList(){
+// 	var taskList = [4,6,5];
+// 	return taskList
+// }
