@@ -12,13 +12,13 @@ html
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Постановщик
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Контроллер
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Исполнитель
-				td(colspan='1', bgcolor='#D3EDF6', align='center') статус
+				td(colspan='1', bgcolor='#D3EDF6', align='center') Cтатус
 				td(colspan='1', bgcolor='#D3EDF6', align='center') Описание
-				if (task.type == 'Подзадача')
-					td(colspan='1', bgcolor='#D3EDF6', align='center', id='idParent1') parent
+				//-if (task.type == 'Подзадача')
+				td(colspan='1', bgcolor='#D3EDF6', align='center', id='idParent1') Parent
 
 			tr
-				form(method='post', action='/update', name='name1')
+				form(method='post', action='/update', name='task')
 					tr
 						input(type='hidden', value=task.id, name='id')
 						td
@@ -62,11 +62,11 @@ html
 										option(value=i) #{i}
 						td 
 							input(type='text', value=task.description, name='description')
-						if (task.type == 'Подзадача')
-							td(id='idParent2')
-								select(required='', name='parent', form='task')
-									each i in taskArray
-										option(value=i) #{i}
+						//-if (task.type == 'Подзадача')
+						td(id='idParent2')
+							select(required='', name='parent')
+								each i in taskArray
+									option(value=i) #{i}
 					tr
 							input(type='submit', value='Применить')
 	script(src='display.js')

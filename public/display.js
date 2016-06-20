@@ -5,10 +5,12 @@ function checkParent(value){
 	if(value == 'Подзадача') {
 		document.getElementById('idParent1').hidden = false;
 		document.getElementById('idParent2').hidden = false;
+		console.log(1);
 	}
 	else {
 		document.getElementById('idParent1').hidden = true;
 		document.getElementById('idParent2').hidden = true;
+		console.log(2);
 	}
 }
 

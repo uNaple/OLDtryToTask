@@ -24,8 +24,8 @@ function myTask() {           										//объект Задание
 	
 	this.status = null;												//status задачи
 	
-	this.parent = {};												//родитель, если задача принадлежит проекту или является подзадачей
-	this.child	= {};												//набор подзадач, для этого проекта
+	this.parent = null;												//родитель, если задача принадлежит проекту или является подзадачей
+	this.child	= [];												//набор подзадач, для этого проекта
 	//this.isParent();
 	//this.isChild();
 
@@ -36,9 +36,11 @@ function myTask() {           										//объект Задание
 }
 
 myTask.prototype.checkParent = function(){							//проверка правильности родителя
-	var task = this;
-	if(task.type == typeArray[3] || task.parent == null){
-		console.log('У подзадачи должен быть родитель');
+	var self = this;
+	console.log(self.type);
+	console.log(self.parent);
+	if(self.type == typeArray[2] && self.parent == null){
+		console.log('У подзадачи должен быть родитель. Задача: ' + self.name);
 		return null;
 	}
 	else 
@@ -49,7 +51,7 @@ myTask.prototype.checkThis = function(){							//тут собрать вмес�
 	if(this.checkParent())
 		return true;
 	else {
-		console.log('check this find error');
+		console.log('check this find error ');
 		return null;
 	}
 }
@@ -68,7 +70,11 @@ module.exports = function(app, express){
 	app.use(bodyParser.raw());
 	//app.use(db.getList(taskList, userList));
 	//app.use('/edit', db.getList(taskList, userList));
-	
+	app.post('/login', function(req,res){
+		//console.log(req.body);
+		user = req.body.username;
+		res.send('Hello world');
+	})
 	//================================================================ROUTE
 	//я мудак, поэтому адреса в нижнем регистре, имена функций по верблюжьи
 	app.get('/', home);
@@ -150,6 +156,7 @@ module.exports = function(app, express){
 	}
 
 	function edit(req,res){
+		console.log(JSON.parse(req.body.task));
 		db.getList(function(err, userList, taskList){
 			if(err)
 				console.log('Edit ' + err)
@@ -167,16 +174,19 @@ module.exports = function(app, express){
 	}
 
 	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
+		console.log(req.body);
 		var obj = new myTask;
-		obj.init(req.body);
-		db.updateTask(obj, function(err){
-			if(err)
-				console.log('Ошибка при обновлении: ' + err);
-			else {
-				console.log('Успешно обновлено!');      
-				res.redirect('/showall');
-			}
-		})
+		console.log(obj);
+		if(obj.init(req.body)){
+			db.updateTask(obj, function(err){
+				if(err)
+					console.log('Ошибка при обновлении: ' + err);
+				else {
+					console.log('Успешно обновлено!');      
+					res.redirect('/showall');
+				}
+			})
+		}
 	}
 
 	function showSubTask(req,res){
@@ -207,6 +217,7 @@ module.exports = function(app, express){
 			})
 		}
 		else
+			console.log('Не прошел проверку на корректность');
 	}
 
 	function addUser(req,res){

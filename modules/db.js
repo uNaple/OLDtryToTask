@@ -79,8 +79,8 @@ function addTask (obj, cb) {						//добавить задание
 						addHistory(client,"blahblah",typeOfAction[0]);	    //добавляем в историю
 					}
 		    	});
+				//client.end();
 		    }
-			client.end();
 		});
 	});
  }
