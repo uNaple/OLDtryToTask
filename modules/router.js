@@ -13,9 +13,9 @@ function myTask() {           										//объект Задание
 	this.name = 'New Task';											//name
 
 	this.type = null;												//type задачи: задача, подзадача, проект
-	this.director = 'insystem';										//director
 
-	this.controller = 'insystem';									//controllerом изначально ставится директор	
+	this.director = 'insystem';										//director
+	this.controller =  null;										//controllerом изначально ставится директор	
 	this.executor = null;											//executor
 
 	this.timeOfSet = db.getNowDate();								//Время установки
@@ -23,14 +23,42 @@ function myTask() {           										//объект Задание
 	this.timeOfEnd = null;											//Время конца
 	
 	this.status = null;												//status задачи
-	this.parent = null;												//родитель, если задача принадлежит проекту или является подзадачей
-	this.child	= null;												//набор подзадач, для этого проекта
+	
+	this.parent = {};												//родитель, если задача принадлежит проекту или является подзадачей
+	this.child	= {};												//набор подзадач, для этого проекта
+	//this.isParent();
+	//this.isChild();
 
 	this.description = null;										//description
-
 	this.reminder = null;											//напоминание, дата когда напомнить
 	//this.taskList = null;											//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
 	this.repeat = null;												//когда повторять, например задача отправить ЗП на определенное число месяца
+}
+
+myTask.prototype.checkParent = function(){							//проверка правильности родителя
+	var task = this;
+	if(task.type == typeArray[3] || task.parent == null){
+		console.log('У подзадачи должен быть родитель');
+		return null;
+	}
+	else 
+		return true;
+}
+
+myTask.prototype.checkThis = function(){							//тут собрать вместе все проверки на дату, на родителя, и пускать задачу дальше только если все ок
+	if(this.checkParent())
+		return true;
+	else {
+		console.log('check this find error');
+		return null;
+	}
+}
+
+myTask.prototype.init = function(obj){								//заполняю задачу из объекта
+	for(var i in obj){
+		this[i] = obj[i];
+	}
+	return this.checkThis();
 }
 
 module.exports = function(app, express){
@@ -126,7 +154,6 @@ module.exports = function(app, express){
 			if(err)
 				console.log('Edit ' + err)
 			else {
-				console.log(JSON.parse(req.body.task));
 				res.render('edit', {
 							title: 			'TASK MANAGER YOPTA',
 							task: 			JSON.parse(req.body.task),
@@ -139,8 +166,10 @@ module.exports = function(app, express){
 		})
 	}
 
-	function update(req,res){
-		db.updateTask(req.body,	function(err){
+	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
+		var obj = new myTask;
+		obj.init(req.body);
+		db.updateTask(obj, function(err){
 			if(err)
 				console.log('Ошибка при обновлении: ' + err);
 			else {
@@ -166,15 +195,18 @@ module.exports = function(app, express){
 	}
 
 	function addTask(req, res){													//Обработка добавления задания
-		console.log(req.body);
-		db.addTask(req.body, function(err, result){
-			if(err)
-				console.log(err);
-			else {
-				console.log(result);
-				res.redirect('/show?id='+result.id);
-			}
-		})
+		var obj = new myTask;													//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
+		if(obj.init(req.body)){
+			db.addTask(obj, function(err, result){
+				if(err)
+					console.log(err);
+				else {
+					console.log(result);
+					res.redirect('/show?id='+result.id);
+				}
+			})
+		}
+		else
 	}
 
 	function addUser(req,res){

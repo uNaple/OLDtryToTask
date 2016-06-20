@@ -170,7 +170,7 @@ function loadAllUsers(cb){							//Получтиь всех пользоват�
 
 function loadAll(cb){							//Получить все задачи. Принимает переменную, в которую посылает полученные из БД данные
 	connectDB(function(client){
-		var query = `SELECT * FROM tasks.tasks;`;
+		var query = `SELECT * FROM tasks.tasks ORDER BY id ASC;`;
 		client.query(query, function (err, result){
 			if(err)
 				cb(err);
