@@ -7,10 +7,9 @@ var db 			= require('./modules/db'),
 	auth		= require('./modules/router')(app,express),
 	path		= require('path'),
 	bodyParser 	= require('body-parser');
-const user = 0;
 
 app.listen(9120, function () { 
-   console.log('Example app listening on port 9120!\n >> Enter the matrix? (red/blue)');
+   console.log('Example app listening on port 9120!\n');
  });
 
 app.use(bodyParser.json());

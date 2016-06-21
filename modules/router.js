@@ -1,80 +1,20 @@
+//Роутинг и обработка 
 var db 			= require('./db'),
 	path		= require('path'),
 	bodyParser 	= require('body-parser'),
 	async 		= require('async'),
-	auth		= require('./auth');
+	auth		= require('./auth'),
+	myTask 		= require('../task');
 
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
 	typeOfAction = ["Добавлена", "Переназначена", "Статус сменен на *"],
 	typeArray    = ['Проект','Задача','Подзадача'];
-
-function myTask() {           										//объект Задание
-	this.id = null;
-	this.name = 'New Task';											//name
-
-	this.type = null;												//type задачи: задача, подзадача, проект
-
-	this.director = 'insystem';										//director
-	this.controller =  null;										//controllerом изначально ставится директор	
-	this.executor = null;											//executor
-
-	this.timeOfSet = db.getNowDate();								//Время установки
-	this.timeOfStart = null;										//Время начала
-	this.timeOfEnd = null;											//Время конца
-	
-	this.status = null;												//status задачи
-	
-	this.parent = null;												//родитель, если задача принадлежит проекту или является подзадачей
-	this.child	= [];												//набор подзадач, для этого проекта
-	//this.isParent();
-	//this.isChild();
-
-	this.description = null;										//description
-	this.reminder = null;											//напоминание, дата когда напомнить
-	//this.taskList = null;											//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
-	this.repeat = null;												//когда повторять, например задача отправить ЗП на определенное число месяца
-}
-
-myTask.prototype.checkParent = function(){							//проверка правильности родителя
-	var self = this;
-	console.log(self.type);
-	console.log(self.parent);
-	if(self.type == typeArray[2] && self.parent == null){
-		console.log('У подзадачи должен быть родитель. Задача: ' + self.name);
-		return null;
-	}
-	else 
-		return true;
-}
-
-myTask.prototype.checkThis = function(){							//тут собрать вместе все проверки на дату, на родителя, и пускать задачу дальше только если все ок
-	if(this.checkParent())
-		return true;
-	else {
-		console.log('check this find error ');
-		return null;
-	}
-}
-
-myTask.prototype.init = function(obj){								//заполняю задачу из объекта
-	for(var i in obj){
-		this[i] = obj[i];
-	}
-	return this.checkThis();
-}
 
 module.exports = function(app, express){
 	//================================================================MIDDLEWARE
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(bodyParser.raw());
-	//app.use(db.getList(taskList, userList));
-	//app.use('/edit', db.getList(taskList, userList));
-	app.post('/login', function(req,res){
-		//console.log(req.body);
-		user = req.body.username;
-		res.send('Hello world');
-	})
 	//================================================================ROUTE
 	//я мудак, поэтому адреса в нижнем регистре, имена функций по верблюжьи
 	app.get('/', home);
@@ -83,6 +23,8 @@ module.exports = function(app, express){
 	app.get('/add', add);					//Форма для добавления задания
 	app.get('/showall', showAll);			//Отображение всех задач
 	app.get('/showusers', showUsers);		//Отображение всех пользователей
+	app.get('/deletetask', deleteTask);		//Удалить задачу
+	app.get('/deleteuser', deleteUser);
 	app.post('/edit', edit);				//Форма для редактирования задания
 
 	//действия по нажатию кнопок. сделать норм обработку, чтоб не было отдельного адреса на действия
@@ -90,7 +32,6 @@ module.exports = function(app, express){
 	app.post('/update', update);			//Обработка обновления задания
 	app.post('/showsubtask', showSubTask);	//показать подзадачи
 	app.post('/adduser', addUser);			//Добавление пользователя
-
 	//================================================================HANDLER
 
 	function home(req,res) {
@@ -120,7 +61,7 @@ module.exports = function(app, express){
 			else
 				res.render('add', {
 					title: 			'TASK MANAGER YOPTA',
-					task: 			new myTask(),
+					task: 			new myTask,
 					typeArray: 		typeArray,
 					statusArray: 	statusArray,
 					usersArray: 	userList,
@@ -130,7 +71,7 @@ module.exports = function(app, express){
 	}
 
 	function showAll(req,res){
-		db.loadAll(function(err, result){    							//в переменной результаты запроса из БД
+		db.loadAll(function(err, result){    									//в переменной результаты запроса из БД
 			if(err)
 				console.log("LoadAll function " + err);
 			else {
@@ -156,7 +97,7 @@ module.exports = function(app, express){
 	}
 
 	function edit(req,res){
-		console.log(JSON.parse(req.body.task));
+		//console.log(JSON.parse(req.body.task));
 		db.getList(function(err, userList, taskList){
 			if(err)
 				console.log('Edit ' + err)
@@ -173,10 +114,26 @@ module.exports = function(app, express){
 		})
 	}
 
+	function addTask(req, res){													//Обработка добавления задания
+		var obj = new myTask;													//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
+		if(obj.init(req.body)){
+			db.addTask(obj, function(err, result){
+				if(err)
+					console.log(err);
+				else {
+					console.log(result);
+					res.redirect('/show?id='+result.id);
+				}
+			})
+		}
+		else
+			console.log('Не прошел проверку на корректность');
+	}
+
 	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
-		console.log(req.body);
+		//console.log(req.body);
 		var obj = new myTask;
-		console.log(obj);
+		// /console.log(obj);
 		if(obj.init(req.body)){
 			db.updateTask(obj, function(err){
 				if(err)
@@ -204,22 +161,6 @@ module.exports = function(app, express){
 		})
 	}
 
-	function addTask(req, res){													//Обработка добавления задания
-		var obj = new myTask;													//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
-		if(obj.init(req.body)){
-			db.addTask(obj, function(err, result){
-				if(err)
-					console.log(err);
-				else {
-					console.log(result);
-					res.redirect('/show?id='+result.id);
-				}
-			})
-		}
-		else
-			console.log('Не прошел проверку на корректность');
-	}
-
 	function addUser(req,res){
 		db.addUser(req.body.userName, function(err, result){
 			if(err)
@@ -231,6 +172,31 @@ module.exports = function(app, express){
 		});
 		console.log(req.body.userName);
 	}
+
+	function deleteTask(req,res){
+		//console.log(req.query.id);
+		db.deleteTask(req.query.id, function(err, result){
+			if(err)
+				console.log('Ошибка при удалении задачи ' + err)
+			else {
+				console.log(result);
+				//console.log('Задание с id = ' + `${id}` + ' удалено');
+				res.redirect('/showall');
+			}
+		})
+	}
+
+	function deleteUser(req, res){
+		db.deleteUser(req.query.id, function(err, result){
+			if(err)
+				console.log('Ошибка при удалении пользователя ' + err);
+			else {
+				console.log(result);
+				res.redirect('/showusers');
+			}
+		})
+	}
+
 }
 //================================================================EXPORT
 // module.exports = {

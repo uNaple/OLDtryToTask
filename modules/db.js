@@ -1,3 +1,4 @@
+//Модуль работы с БД
 function connectDB(cb) { 							//коннект к ДБ
 	var pg = require('pg');
 	var conString = "postgres://tasker:password@127.0.0.1:5432/tasks";//"tasks-postgres://tasker:password@127.0.0.1:5432/tasks"
@@ -69,14 +70,14 @@ function addTask (obj, cb) {						//добавить задание
 		    if (err)
 		    	cb(err)
 		    else { 
-		    	console.log('Задача добавлена с id: ' + result.rows[0].id);
-		    	// obj.id = result.rows[0].id;
+		    	console.log('Задача с id: ' + result.rows[0].id);
+    			var text = 'Задача с id: ' + result.rows[0].id + ' добавлена';
+				addHistory(client, text, typeOfAction[0]);		
 		    	loadTask(result.rows[0].id, function(err,result){			//возвращаем добавленную задачу
 		    		if(err)
 		    			cb(err);
 		    		else {
 		    			cb(null,result);
-						addHistory(client,"blahblah",typeOfAction[0]);	    //добавляем в историю
 					}
 		    	});
 				//client.end();
@@ -92,10 +93,11 @@ function addUser(obj, cb) {														//добавить пользовате
 		client.query(query, function(err, result) {
 		    if (err)
 		    	cb(err);
-		    else
+		    else {
 		    	cb(null, result)
-		    // obj.id = result.rows[0].id;
-			//addHistory(client,"blahblah",typeOfAction[0]);	    
+		    	var text = 'Пользователь с id: ' + result.rows[0].id + ' добавлен';
+				addHistory(client,text,typeOfAction[0]);
+		    }
 			client.end();
 		})
 	})
@@ -146,29 +148,27 @@ function updateTask (obj, cb){                      							//обновить з
 			    else 
 			    	cb(null)
 			});
-		addHistory(client,"бла",typeOfAction[3]); 	//добавляем в историю
+		var text = 'Задача с id: ' + `${obj.id}` + ' изменена';
+		addHistory(client, text, typeOfAction[3]); 	//добавляем в историю
 		//client.end();
 	})
 }
 
-function loadAllUsers(cb){							//Получтиь всех пользователей. Принимает переменную, в которую посылает полученные из БД данные
+function loadAllUsers(cb){															//Получтиь всех пользователей. Принимает переменную, в которую посылает полученные из БД данные
 	connectDB( function(client){
 		var query = `SELECT * FROM tasks.users;`;
 		client.query(query, function (err, result){
 			if(err)
 				cb(err)
-				//console.log('load All Users func. ' + err);
 			else {
-				//console.log(result.rows);
 				cb(null, result.rows);
-				//console.log('Данные из таблицы users получены');
 				client.end();
 			}
 		})
 	})
 }
 
-function loadAll(cb){							//Получить все задачи. Принимает переменную, в которую посылает полученные из БД данные
+function loadAll(cb){																//Получить все задачи. Принимает переменную, в которую посылает полученные из БД данные
 	connectDB(function(client){
 		var query = `SELECT * FROM tasks.tasks ORDER BY id ASC;`;
 		client.query(query, function (err, result){
@@ -182,7 +182,7 @@ function loadAll(cb){							//Получить все задачи. Приним
 
 }
 
-function loadTask(id, cb){							//передаю id и по нему получаю все данные о запрошенной задаче и вывожу в форму
+function loadTask(id, cb){															//передаю id и по нему получаю все данные о запрошенной задаче и вывожу в форму
 	connectDB( function(client){
 		var query = `SELECT * FROM tasks.tasks WHERE id = '${id}';`;
 		client.query(query, function (err, result){
@@ -202,7 +202,7 @@ function loadTask(id, cb){							//передаю id и по нему получ
 	})
 }
 
-function loadSubTask(parent, cb){										//передаю parent, сделать передачу по id родителя
+function loadSubTask(parent, cb){														//передаю parent, сделать передачу по id родителя
 	connectDB(function(client){						
 		var query = `SELECT * FROM tasks.tasks WHERE parent='${parent}';`
 		//console.log(query);
@@ -225,7 +225,39 @@ function loadSubTask(parent, cb){										//передаю parent, сделат
 	})
 }
 
-function reassignTask(recieve, give) {			//Переназначить задание
+function deleteTask(id, cb) { 																		//удаление задания
+	var query = `DELETE FROM tasks.tasks WHERE id = ${id}`;
+	connectDB(function(client){
+		client.query(query, function(err, result){
+			if(err)
+				cb(err);
+				// console.log('Ошибка при удалении задачи ' + err);
+			else {
+				var text = 'Задача с id: ' + `${id}` + ' удалена';
+				cb(null, text);
+				addHistory(client, text, typeOfAction[4]);
+			}
+			client.end();
+		})
+	})
+}
+
+function deleteUser(id, cb) {
+	var query = `DELETE FROM tasks.users WHERE id = ${id}`;
+	connectDB(function(client){
+		client.query(query, function(err, result){
+			if(err)
+				console.log(err)
+			else {
+				var text = 'Пользователь с id: ' + `${id}` + ' удален';
+				cb(null,text)
+				addHistory(client, text, typeOfAction[4]);
+			}
+		})
+	})
+}
+
+function reassignTask(recieve, give) {														//Переназначить задание
 	//кто получает от кого получает
 	//меняем status на ожидание, создаем новую задачу, в истории отмечаем что переназначили
 	connectDB(function(client){
@@ -244,7 +276,7 @@ function reassignTask(recieve, give) {			//Переназначить задан
 	})
 }
 
-function createTable(name) {					//создать таблицу, поставить отлов ошибок
+function createTable(name) {																//создать таблицу, поставить отлов ошибок
 	connectDB ( function(client) {
 	switch(name) {
 	case 'tasks':
@@ -291,12 +323,12 @@ function createTable(name) {					//создать таблицу, постави
 	})
 }
 
-function deleteTable(name) {              		//удаление таблицы
+function deleteTable(name) {              														//удаление таблицы
 	var query = `DELETE FROM tasks.${name};`;
 	connectDB(function(client){
 		client.query(query, function(err, result){
 			if(err)
-				console.log('Ошибка при удалении ' + err)
+				console.log('Ошибка при удалении таблицы ' + err)
 			else
 				console.log('Успешно удалено!');
 			client.end();
@@ -314,7 +346,7 @@ function getNowDate(){
 }
 
 var statusArray  = ["В процессе", "Закончена", "Приостановлена", "Добавлена/Ожидает принятия", "Ожидает завершения подзадачи", "Отменена"],
-	typeOfAction = ["Добавлена", "Переназначена", "status сменен на *", "Обновлено"],
+	typeOfAction = ["Добавление", "Переназначение", "Смена статуса на *", "Обновление", "Удаление"],
 	usersArray   = ["Саша", "Андрей", "Костя"],
 	typeArray    = ['Проект','Задача','Подзадача'];
 var name = 'lol',
@@ -336,6 +368,8 @@ module.exports = {
 	loadAllUsers: 	loadAllUsers,
 	getList: 		getList,
 	loadSubTask: 	loadSubTask,
+	deleteTask: 	deleteTask,
+	deleteUser: 	deleteUser
 	// toListTask: 	toListTask,
 	// toListUser: 	toListUser 
 };

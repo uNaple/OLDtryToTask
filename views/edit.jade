@@ -31,8 +31,6 @@ html
 										option(value=i, selected) #{i}
 									else
 										option(value=i) #{i}
-						//- -var userArray = getUserList();
-						//- -var taskArray 	= getTaskList(); 
 						td 
 							input(name='director', list='users', value=task.director)
 							datalist(id='users')
@@ -67,6 +65,9 @@ html
 							select(required='', name='parent')
 								each i in taskArray
 									option(value=i) #{i}
-					tr
+						td
 							input(type='submit', value='Применить')
+				form(method='get', action='/deletetask')
+					input(type='hidden', value=task.id, name='id')
+					input(type='submit', onclick="return confirm('R u shure')",value='Удалить')
 	script(src='display.js')

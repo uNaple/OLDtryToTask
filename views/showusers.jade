@@ -15,9 +15,13 @@ html
 				tr
 					td= i.id
 					td= i.name
+					td
+						form(method='get', action='/deleteuser')
+							input(type='hidden', value=i.id, name='id')
+							input(type='submit', value='Удалить', onclick="return confirm('R u shure')")
 		
 		.block1
 			form(method='post', action='/adduser')
 				input(type='submit', value='Добавить нового пользователя')
-				input(type='text', name='userName', align='left')
+				input(type='text', name='userName', align='left', required='')
 
