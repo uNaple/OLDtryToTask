@@ -60,7 +60,7 @@ html
 							input(type='text', value=task.description, name='description')
 						//-var taskArray = getTaskArr()
 						td(id='idParent2')
-							select(required='',name='parent', form='task')
+							select(name='parent', form='task')
 								each i in taskArray
 									option(value=i) #{i}
 					tr
