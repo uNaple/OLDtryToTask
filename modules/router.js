@@ -116,26 +116,26 @@ module.exports = function(app, express){
 
 	function addTask(req, res){													//Обработка добавления задания
 		var obj = new myTask;													//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
-		if(obj.init(req.body)){
-			db.addTask(obj, function(err, result){
-				if(err)
-					console.log(err);
-				else {
-					console.log(result);
-					res.redirect('/show?id='+result.id);
-				}
-			})
-		}
-		else {
-			res.send('Dont proshel proverky on correct');
-			console.log('Не прошел проверку на корректность');
-		}
+		obj.init(req.body, function(err, result){
+			if(err) {
+				res.send('Dont proshel proverky on correct');
+				console.log('Не прошел проверку на корректность');
+			}
+			else {
+				db.addTask(obj, function(err, result){
+					if(err)
+						console.log(err);
+					else {
+						console.log(result);
+						res.redirect('/show?id='+result.id);
+					}
+				})
+			}
+		})
 	}
 
 	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
-		//console.log(req.body);
 		var obj = new myTask;
-		// /console.log(obj);
 		if(obj.init(req.body)){
 			db.updateTask(obj, function(err){
 				if(err)
