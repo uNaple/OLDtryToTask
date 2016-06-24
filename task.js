@@ -108,7 +108,7 @@ myTask.prototype.checkThis = function(cb){							//тут собрать вме�
 			}
 			else if(i == (resultArray.length-1)) {
 				console.log('4');
-				cb(null, true);
+				cb(null);
 			}
 		}
 	})
@@ -118,13 +118,13 @@ myTask.prototype.init = function(obj, cb){								//заполняю задач�
 	for(var i in obj){
 		this[i] = obj[i];
 	}
-	this.checkThis(function(err, result){
+	this.checkThis(function(err){
 		if(err) {
 			cb(err);
 			console.log(err);
 		}
 		else
-			cb(null, true);
+			cb(null);
 	});
 }
 

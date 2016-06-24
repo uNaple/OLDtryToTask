@@ -40,6 +40,7 @@ module.exports = function(app, express){
 	}
 	
 	function show(req,res){
+		
 		db.loadTask(req.body.id || req.params.id || req.query.id, function(err, tmpTask){
 			if(err){
 				console.log(err.message);
@@ -116,7 +117,7 @@ module.exports = function(app, express){
 
 	function addTask(req, res){													//Обработка добавления задания
 		var obj = new myTask;													//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
-		obj.init(req.body, function(err, result){
+		obj.init(req.body, function(err){
 			if(err) {
 				res.send('Dont proshel proverky on correct');
 				console.log('Не прошел проверку на корректность');
@@ -136,20 +137,22 @@ module.exports = function(app, express){
 
 	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
 		var obj = new myTask;
-		if(obj.init(req.body)){
-			db.updateTask(obj, function(err){
-				if(err)
-					console.log('Ошибка при обновлении: ' + err);
-				else {
-					console.log('Успешно обновлено!');      
-					res.redirect('/showall');
-				}
-			})
-		}
-		else {
-			res.send('Dont proshel proverky on correct');
-			console.log('Не прошел проверку на корректность');
-		}
+		obj.init(req.body, function(err){
+			if(err) {
+				res.send('Dont proshel proverky on correct');
+				console.log('Не прошел проверку на корректность');
+			}
+			else {
+				db.updateTask(obj, function(err){
+					if(err)
+						console.log('Ошибка при обновлении: ' + err);
+					else {
+						console.log('Успешно обновлено!');      
+						res.redirect('/showall');
+					}
+				})
+			}
+		})
 	}
 
 	function showSubTask(req,res){
