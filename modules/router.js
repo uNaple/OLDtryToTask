@@ -126,8 +126,10 @@ module.exports = function(app, express){
 				}
 			})
 		}
-		else
+		else {
+			res.send('Dont proshel proverky on correct');
 			console.log('Не прошел проверку на корректность');
+		}
 	}
 
 	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
@@ -143,6 +145,10 @@ module.exports = function(app, express){
 					res.redirect('/showall');
 				}
 			})
+		}
+		else {
+			res.send('Dont proshel proverky on correct');
+			console.log('Не прошел проверку на корректность');
 		}
 	}
 

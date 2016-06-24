@@ -30,54 +30,67 @@ function myTask() {           										//объект Задание
 	this.reminder = null;											//напоминание, дата когда напомнить
 	//this.taskList = null;											//список задач, которым принадлежит данная: Работа, Семья, Дом, ...
 	this.repeat = null;												//когда повторять, например задача отправить ЗП на определенное число месяца
-}
+
+}	
 
 myTask.prototype.checkType = function(){							//проверка правильности родителя у заданного типа задачи, расширить еще
 	var self = this;
+	if(self.type == typeArray[2] && self.parent == null){		//Если подзадача, то должен быть родитель
+		console.log('У подзадачи должен быть родитель. Задача: ' + self.name);
+		return false;
+	}
+	else 
+		return true;
+}
+
+// myTask.prototype.chekOwners = function(){
+// 	var self = this;
+// 	return new Promise(function(resolve, reject){
+// 		db.getList(function(err, userList, taskList){
+
+// 		})
+// 	})
+// }
+
+myTask.prototype.checkParent = function(){								//Если есть родитель, то он должен быть из списка задач
+	var self = this,
+		answer;
 	return new Promise(function(resolve, reject){
-		if(self.type == typeArray[2] && self.parent == null){		//Если подзадача, то должен быть родитель
-			console.log('У подзадачи должен быть родитель. Задача: ' + self.name);
-			reject();
-			//return null;
+		db.loadAll(function(err, res){
+			if(err)
+				reject(err);
+			else
+				resolve(res);
+		})
+	}).then(function(res){
+		for(var i = 0; i < res.length; i++){
+			//console.log(self.parent + ' ' + res[i].name);
+			if(self.parent == res[i].name){
+				console.log('1');
+				return true;
+				break;
+			}															//Прошел по массиву не нашел родительской задачи в списке
 		}
-		else 
-			resolve();
-			//return true;
+		return false;
+	}, function(err){
+		console.log('2 Ошибка при загрузке списка из БД' + err);
 	})
 }
 
-// myTask.prototype.checkParent = function(list){						//Если есть родитель, то он должен быть из списка задач
-// 	var self = this;
-// 	return new Promise(function(resolve, reject){
-// 		db.loadAll(function(err, res){
-// 			if(err)
-// 				reject(err);
-// 			else
-// 				resolve(res);
-// 		})
-// 	}).then(function(res){
-// 		//console.log(res);
-// 		for(var i = 0; i < res.length; i++){
-// 			console.log(self.parent + ' ' + res[i].name);
-// 			if(self.parent == res[i].name){
-// 				console.log('1');
-// 				return true;
-// 				break;
-// 			}															//Прошел по массиву не нашел родительской задачи в списке
-// 		}
-// 		var err1 = new Error('Родитель задачи был удален или отсутствует');
-// 		return false;
-// 	}, function(){
-// 		console.log('2 ');
-// 		return false;
-// 	}
-// 	// return null;
-// 	// console.log('Родитель задачи был удален или отсутствует');
-// }
-
 myTask.prototype.checkThis = function(){							//тут собрать вместе все проверки на дату, на родителя, и пускать задачу дальше только если все ок
-	console.log(this.checkParent());
-	if(this.checkType() && this.checkParent()){
+	var typeIsOk = checkType(),
+		parentIsOk;
+	this.checkParent().then(function(result){
+		if(result) {
+			console.log('6' + result);
+			parentIsOk = true;
+		}
+		else {
+			console.log('7' + result);
+			parentIsOk = false;
+		}
+	});
+	if(typeIsOk && parentIsOk){
 		return true;
 	}
 	else {
