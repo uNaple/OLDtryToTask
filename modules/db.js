@@ -23,7 +23,7 @@ function connectDB(cb) { 							//коннект к ДБ
 
 function getList(cb){
 	var userList = new Array(),
-		taskList = new Array();
+		taskList = [];
 	loadAllUsers(function(err,result){
 		var userListTmp = new Array();
 		if(err)
@@ -35,8 +35,13 @@ function getList(cb){
 				if(err)
 					console.log(err);
 				else {
-					for(var i = 0; i < result.length; i++)
-						taskList[i] = result[i].name;
+					for(var i = 0; i < result.length; i++){
+						taskList[i] = result[i].name; 
+						//console.log(taskList[i]);
+						// result[i].name;
+						// taskList[i].id = result[i].id;
+					}
+					//console.log(taskList);
 					cb(null, userList, taskList);
 				}
 			})			
@@ -67,10 +72,14 @@ function addTask (obj, cb) {						//добавить задание
 			queryHead += ', description';
 			queryTail += `, '${obj.description}'`;
 		}
-		if(obj.parent != null) {
-			queryHead += ', parent';
-			queryTail += `, '${obj.parent}'`;
+		if(obj.parentName != null) {
+			queryHead += ', parentname';
+			queryTail += `, '${obj.parentName}'`;
 		}
+		// if(obj.parent != null) {
+		// 	queryHead += ', parent';
+		// 	queryTail += `, '${obj.parent}'`;
+		// }
 		queryHead += ')';
 		queryTail += ')';
 		var queryFinal = queryHead + queryTail + ' RETURNING id;';
@@ -145,8 +154,8 @@ function updateTask (obj, cb){                      							//обновить з
 		if(obj.status != null) {
 			query += `, status = '${obj.status}'`;
 		}
-		if(obj.parent != null) {
-			query += `, parent = '${obj.parent}'`;
+		if(obj.parentName != null) {
+			query += `, parentname = '${obj.parentName}'`;
 		}
 		query += ` WHERE id = ${obj.id};`;
 		//console.log(query);
@@ -210,9 +219,9 @@ function loadTask(id, cb){															//передаю id и по нему п
 	})
 }
 
-function loadSubTask(parent, cb){														//передаю parent, сделать передачу по id родителя
+function loadSubTask(parentName, cb){														//передаю parent, сделать передачу по id родителя
 	connectDB(function(client){						
-		var query = `SELECT * FROM tasks.tasks WHERE parent='${parent}';`
+		var query = `SELECT * FROM tasks.tasks WHERE parentname='${parentName}';`
 		//console.log(query);
 		client.query(query, function(err, result){
 			//console.log(result);
@@ -221,6 +230,7 @@ function loadSubTask(parent, cb){														//передаю parent, сдел
 				cb(err)				
 			}
 			else if(result.rowCount == 0) {
+				console.log('LOAD SUB TASK RESULT ' + result);
 				var err = new Error('Нет подзадач');
 				cb(err);	
 			}
@@ -243,6 +253,22 @@ function deleteTask(id, cb) { 																		//удаление задани�
 			else {
 				var text = 'Задача с id: ' + `${id}` + ' удалена';
 				cb(null, text);
+				addHistory(client, text, typeOfAction[4]);
+			}
+			client.end();
+		})
+	})
+}
+
+function deleteChildren(parent) {
+	var query = `DELETE FROM tasks.tasks WHERE parent = ${parent}`;
+	connectDB(function(client){
+		client.query(query, function(err, result){
+			if(err)
+				console.log(err);
+			else {
+				var text = 'Задачи с родителем: ' + `${parent}` + ' были удалены';
+				//cb(null, text);
 				addHistory(client, text, typeOfAction[4]);
 			}
 			client.end();
@@ -299,7 +325,8 @@ function createTable(name) {																//создать таблицу, п�
 			timeOfStart timestamp without time zone,
 			timeOfEnd timestamp without time zone, 
 			status varchar(40), 
-			parent varchar(20),
+			parentName varchar(20),
+			parentId varchar(10),
 			description varchar(300));`         //PRIMARY KEY (id) через запятую можно указать несколько первичных ключей
 		break
 	case 'users':

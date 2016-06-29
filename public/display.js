@@ -1,7 +1,7 @@
 var db = require('../modules/db');
 
 function checkParent(value){
-	// /alert('imhere');
+	//alert('hui');
 	if(value == 'Подзадача') {
 		document.getElementById('idParent1').hidden = false;
 		document.getElementById('idParent2').hidden = false;
@@ -14,24 +14,27 @@ function checkParent(value){
 	}
 }
 
-// function getList(){
-// 	db.getList(function(err, userList, taskList){
-// 		if(err)
-// 			console.log('display get list: ')
-// 		else {
-// 			var userList = userList,
-// 				taskList = taskList;
-// 			console.log(userList + taskList);
+function checkChildren(){
+	if(confirm('ds'))
+		submit();
+	else
+		alert('hui');
+}
+// 	db.loadSubTask(name, function(err, result){
+// 		if(err){
+// 			console.log(err);
+// 			alert('hui1u');
 // 		}
-// 	})	
-// }
-
-// function getUserList(){
-// 	var userList = [1,2,3];
-// 	return userList;
-// }
-
-// function getTaskList(){
-// 	var taskList = [4,6,5];
-// 	return taskList
+// 		else if(result){
+// 			if(confirm('У данной задачи есть подзадачи')){
+// 				console.log(result);
+// 				f.submit();
+// 			}
+// 		}
+// 		else {
+// 			if(confirm('Уверены, что хотите удалить задачу?')){
+// 				f.submit();
+// 			}
+// 		}
+// 	}
 // }

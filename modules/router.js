@@ -40,7 +40,6 @@ module.exports = function(app, express){
 	}
 	
 	function show(req,res){
-		
 		db.loadTask(req.body.id || req.params.id || req.query.id, function(err, tmpTask){
 			if(err){
 				console.log(err.message);
@@ -49,7 +48,6 @@ module.exports = function(app, express){
 				res.render('show', {
 					title: 		'TASK MANAGER YOPTA',
 					tmpTask: 	tmpTask
-
 				})
 			}
 		})	
@@ -60,6 +58,7 @@ module.exports = function(app, express){
 			if(err)
 				console.log(err)
 			else
+				//console.log(taskList);
 				res.render('add', {
 					title: 			'TASK MANAGER YOPTA',
 					task: 			new myTask,
@@ -116,9 +115,10 @@ module.exports = function(app, express){
 	}
 
 	function addTask(req, res){													//Обработка добавления задания
-		var obj = new myTask;													//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
-		obj.init(req.body, function(err){
-			if(err) {
+		var obj = new myTask;
+		//console.log(req.body);														//создаю экземпляр и проверяю на корректность данных и если все норм, то заношу
+		obj.checkThis(req.body, function(err){
+			if(err){
 				res.send('Dont proshel proverky on correct');
 				console.log('Не прошел проверку на корректность');
 			}
@@ -137,7 +137,7 @@ module.exports = function(app, express){
 
 	function update(req,res){													//проверяю на корректность данных после изменения и заношу в бд
 		var obj = new myTask;
-		obj.init(req.body, function(err){
+		obj.checkThis(req.body, function(err){
 			if(err) {
 				res.send('Dont proshel proverky on correct');
 				console.log('Не прошел проверку на корректность');
@@ -155,7 +155,7 @@ module.exports = function(app, express){
 		})
 	}
 
-	function showSubTask(req,res){
+	function showSubTask(req, res){
 		db.loadSubTask(JSON.parse(req.body.task).name, function(err, result){
 			if(err) {															//если нет подзадач рисовать сообщение об этом на странице
 				console.log(err);
@@ -170,7 +170,7 @@ module.exports = function(app, express){
 		})
 	}
 
-	function addUser(req,res){
+	function addUser(req, res){
 		db.addUser(req.body.userName, function(err, result){
 			if(err)
 				console.log("Add user function " + err);
@@ -182,17 +182,29 @@ module.exports = function(app, express){
 		console.log(req.body.userName);
 	}
 
-	function deleteTask(req,res){
-		//console.log(req.query.id);
-		db.deleteTask(req.query.id, function(err, result){
-			if(err)
-				console.log('Ошибка при удалении задачи ' + err)
-			else {
-				console.log(result);
-				//console.log('Задание с id = ' + `${id}` + ' удалено');
-				res.redirect('/showall');
-			}
-		})
+	function deleteTask(req, res){
+		// console.log(JSON.parse(req.query.task).name);
+		// var obj = new myTask;
+		// obj.checkChildren(JSON.parse(req.query.task).name, function(err, result){
+		// 	if(err){
+		// 		console.log('Ошибка при проверке детей ' + err);
+		// 		res.send('Ошибка при проверке детей ' + err);//какая-то там ошибка из бд при проверке подзадач
+		// 	}
+		// 	else if(result){
+		// 		res.send('Есть подзадачи и они тоже будут удалены');//ок или отмена для продолжения удаления или отмены удаления
+		// 	}
+		// 	else {
+				db.deleteTask(JSON.parse(req.query.task).id, function(err, result){
+					if(err)
+						console.log('Ошибка при удалении задачи ' + err)
+					else {
+						console.log(result);
+						//console.log('Задание с id = ' + `${id}` + ' удалено');
+						res.redirect('/showall');
+					}
+				})	
+		// 	}
+		// });
 	}
 
 	function deleteUser(req, res){

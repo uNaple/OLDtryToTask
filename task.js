@@ -22,7 +22,8 @@ function myTask() {           										//объект Задание
 	
 	this.status = null;												//status задачи
 	
-	this.parent = null;												//родитель, если задача принадлежит проекту или является подзадачей
+	this.parentName = null;												//родитель, если задача принадлежит проекту или является подзадачей
+	this.parentId = null;
 	this.child	= [];												//набор подзадач, для этого проекта
 
 	this.description = null;										//description
@@ -31,17 +32,32 @@ function myTask() {           										//объект Задание
 	this.repeat = null;												//когда повторять, например задача отправить ЗП на определенное число месяца
 }	
 
+myTask.prototype.checkChildren = function(name, cb){
+	db.loadSubTask(name, function(err, result){
+		if(err){
+			cb(err);
+		}
+		else if(result){
+			console.log(result);
+			var err = new Error('У задачи есть подзадачи и они тоже удалятся');
+			cb(null, result)//тут я пишу что у нас есть подзадачи и они тоже удалятся
+		}
+		else
+			cb(null, null);//все заебись можно удалить без ошибок и нет подзадач
+	});
+}
+
 myTask.prototype.checkType = function(){							//проверка правильности родителя у заданного типа задачи, расширить еще
 	var self = this;
 	return new Promise(function(resolve, reject){
-		if(self.type == typeArray[2] && self.parent == null){			//Если подзадача, то должен быть родитель
+		if(self.type == typeArray[2] && self.parentName == null){			//Если подзадача, то должен быть родитель
 			console.log('У подзадачи должен быть родитель. Задача: ' + self.name);
 			reject(false);
 		}
 		else
 			resolve(true);
 	}).then(function(){
-		console.log('3');
+		console.log('Check type is OK');
 		return true;
 	}, function(){
 		return false;	
@@ -58,15 +74,19 @@ myTask.prototype.checkParent = function(){								//Если есть родит
 				resolve(res);
 		})
 	}).then(function(res){
-		for(var i = 0; i < res.length; i++){
-			//console.log(self.parent + ' ' + res[i].name);
-			if(self.parent == res[i].name){
-				console.log('1');
-				return true;
-				break;
-			}															//Прошел по массиву не нашел родительской задачи в списке
+		if(self.parentName != null){
+			for(var i = 0; i < res.length; i++){
+				//console.log(self.parent + ' ' + res[i].name);
+				if(self.parentName == res[i].name){
+					console.log('Check parent is OK');
+					return true;
+					break;
+				}															//Прошел по массиву не нашел родительской задачи в списке
+			}
+			return false;
 		}
-		return false;
+		else 
+			return true;
 	}, function(err){
 		console.log('Ошибка при загрузке списка задач из БД' + err);
 	});
@@ -85,7 +105,7 @@ myTask.prototype.checkUser = function(){								//Если есть постан
 		for(var i = 0; i < res.length; i++){
 			//console.log(self.director + ' ' + res[i].name);
 			if(self.director == res[i].name){
-				console.log('2');
+				console.log('Check user is OK');
 				return true;
 				break;
 			}															//Прошел по массиву не нашел родительской задачи в списке
@@ -96,21 +116,22 @@ myTask.prototype.checkUser = function(){								//Если есть постан
 	});
 }
 
-myTask.prototype.checkThis = function(cb){							//тут собрать вместе все проверки на дату, на родителя, и пускать задачу дальше только если все ок
-	Promise.all([this.checkParent(), this.checkUser(), this.checkType()]).then(function(resultArray){
-		console.log(resultArray);
-		for(var i = 0; i < resultArray.length; i++){
-			if(resultArray[i] == false){
-				var err = 'Check this find error';
-				//console.log(err);
-				cb(err);
-				break;
+myTask.prototype.checkThis = function(obj, cb){							//тут собрать вместе все проверки на дату, на родителя, и пускать задачу дальше только если все ок
+	this.init(obj, function(self){
+		Promise.all([self.checkParent(), self.checkUser(), self.checkType()]).then(function(resultArray){
+			console.log(resultArray);
+			for(var i = 0; i < resultArray.length; i++){
+				if(resultArray[i] == false){
+					var err = 'Check this find error';
+					cb(err);
+					break;
+				}
+				else if(i == (resultArray.length-1)) {
+					console.log('Check this is OK');
+					cb(null);
+				}
 			}
-			else if(i == (resultArray.length-1)) {
-				console.log('4');
-				cb(null);
-			}
-		}
+		})
 	})
 }
 
@@ -118,14 +139,7 @@ myTask.prototype.init = function(obj, cb){								//заполняю задач�
 	for(var i in obj){
 		this[i] = obj[i];
 	}
-	this.checkThis(function(err){
-		if(err) {
-			cb(err);
-			console.log(err);
-		}
-		else
-			cb(null);
-	});
+	cb(this);
 }
 
 module.exports = myTask;
